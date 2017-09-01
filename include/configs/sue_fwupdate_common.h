@@ -105,6 +105,11 @@
         "echo \"INFO: loading swu fit image into RAM...\"; " \
         "bstate dontunplug; " \
         "run readswufituImage; " \
+        "if test ${secure_board} = 0; " \
+            "then " \
+            "echo \"INFO: board is not locked, do not enforce swufit signature\"; " \
+            "setenv verify no; " \
+        "fi; " \
         "echo \"INFO: booting swu fit image...\"; " \
         "run bootfitimage;\0" \
 \
