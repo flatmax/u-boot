@@ -143,7 +143,6 @@
 
 #define CONFIG_MFG_ENV_SETTINGS \
 	"mfg_args=setenv bootargs console=${console},${baudrate} ${mtdparts} " \
-		"mwifiex_pcie.mfg_mode=1 " \
 		"root=/dev/ram0 rdinit=/linuxrc\0" \
 	"bootcmd_mfg=fwup mtdparts; run mfg_args; setenv loadaddr ${fdt_addr}; bootm ${loadaddr}#factory@1;\0"
 
