@@ -23,7 +23,7 @@
 #include "flags_mx7.h"
 #include "partitions.h"
 
-#define FWUP_MAX_BOOT_CNT	6UL
+#define FWUP_MAX_BOOT_CNT	9UL
 
 static const struct sue_device_info *current_device;
 
