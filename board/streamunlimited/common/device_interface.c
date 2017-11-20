@@ -55,6 +55,7 @@ static const char *module_names[] = {
 	"stream810 extended",
 	"stream810 extended plus",
 	"stream810 basic 4.4W",
+	"stream810 extended 2.4EW",
 };
 
 /*
@@ -67,6 +68,7 @@ static const char *canonical_module_names[] = {
 	"stream810x",
 	"stream810h",
 	"stream810b_44w",
+	"stream810x_24ew",
 };
 
 struct module_map_entry {
@@ -84,6 +86,7 @@ static const struct module_map_entry module_map[] = {
 	{ SUE_MODULE_S810_EXTENDED_PLUS,	2, 0x11, 0x0C },
 	{ SUE_MODULE_S810_EXTENDED_PLUS,	3, 0x11, 0x18 },
 	{ SUE_MODULE_S810_BASIC_44W,		4, 0x11, 0x04 },
+	{ SUE_MODULE_S810_EXTENDED_24EW,	4, 0x11, 0x03 },
 };
 
 static const char *carrier_names[] = {
