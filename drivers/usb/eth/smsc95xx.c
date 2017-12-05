@@ -682,7 +682,7 @@ static int smsc95xx_send(struct eth_device *eth, void* packet, int length)
 	ALLOC_CACHE_ALIGN_BUFFER(unsigned char, msg,
 				 PKTSIZE + sizeof(tx_cmd_a) + sizeof(tx_cmd_b));
 
-	debug("** %s(), len %d, buf %#x\n", __func__, length, (int)msg);
+	debug("** %s(), len %d, buf %#lx\n", __func__, length, (unsigned long int)msg);
 	if (length > PKTSIZE)
 		return -1;
 
@@ -702,7 +702,7 @@ static int smsc95xx_send(struct eth_device *eth, void* packet, int length)
 				length + sizeof(tx_cmd_a) + sizeof(tx_cmd_b),
 				&actual_len,
 				USB_BULK_SEND_TIMEOUT);
-	debug("Tx: len = %u, actual = %u, err = %d\n",
+	debug("Tx: len = %lu, actual = %u, err = %d\n",
 	      length + sizeof(tx_cmd_a) + sizeof(tx_cmd_b),
 	      actual_len, err);
 	return err;
@@ -716,7 +716,7 @@ static int smsc95xx_recv(struct eth_device *eth)
 	int err;
 	int actual_len;
 	u32 packet_len;
-	int cur_buf_align;
+	long int cur_buf_align;
 
 	debug("** %s()\n", __func__);
 	err = usb_bulk_msg(dev->pusb_dev,
@@ -765,7 +765,7 @@ static int smsc95xx_recv(struct eth_device *eth)
 		/* Adjust for next iteration */
 		actual_len -= sizeof(packet_len) + packet_len;
 		buf_ptr += sizeof(packet_len) + packet_len;
-		cur_buf_align = (int)buf_ptr - (int)recv_buf;
+		cur_buf_align = (unsigned long int)buf_ptr - (unsigned long int)recv_buf;
 
 		if (cur_buf_align & 0x03) {
 			int align = 4 - (cur_buf_align & 0x03);
