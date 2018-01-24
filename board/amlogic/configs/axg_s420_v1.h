@@ -61,6 +61,7 @@
 #define CONFIG_AML_MESON_SERIAL   1
 #define CONFIG_SERIAL_MULTI		1
 
+#define CONFIG_AUDIO_WAKEUP 1
 #define CONFIG_BT_WAKEUP
 //#define CONFIG_WIFI_WAKEUP
 
@@ -424,7 +425,7 @@
 #define CONFIG_UNIFY_KEY_MANAGE                 1
 
 /* net */
-#define CONFIG_CMD_NET   1
+//#define CONFIG_CMD_NET   1
 #if defined(CONFIG_CMD_NET)
 	#define CONFIG_DESIGNWARE_ETH 1
 	#define CONFIG_PHYLIB	1

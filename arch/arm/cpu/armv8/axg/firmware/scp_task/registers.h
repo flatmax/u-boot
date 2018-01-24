@@ -71,4 +71,9 @@
 #define IRQ_WATCHDOG_NUM    50
 #define IRQ_AO_CECB_NUM     51
 #define IRQ_AO_TIMERA_NUM   52
+
+//audio to-ddr A irq
+#define IRQ_AUDIO_TODDR_A_NUM   63
+//audio pwr detect irq
+#define IRQ_AUDIO_PWR_NUM   76
 #endif				//_SCP_REGISTER_DEFINES_

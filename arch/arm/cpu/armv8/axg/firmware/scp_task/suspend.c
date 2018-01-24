@@ -26,6 +26,9 @@
 unsigned int time;
 #include <scp_remote.c>
 
+#ifdef CONFIG_AUDIO_WAKEUP
+#include <scp_pdm.c>
+#endif
 #include <scp_adc.c>
 #include <pwr_ctrl.c>
 

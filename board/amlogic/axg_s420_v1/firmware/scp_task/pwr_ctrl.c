@@ -256,6 +256,10 @@ void get_wakeup_source(void *response, unsigned int suspend_from)
 	gpio->trig_type = GPIO_IRQ_FALLING_EDGE;
 	p->gpio_info_count = ++i;
 #endif
+#ifdef CONFIG_AUDIO_WAKEUP
+	if (0 < (readl(EE_AUDIO_CLK_PDMIN_CTRL1) & (1<<31)))
+		val |= AUD_PWR_WAKEUP_SRC;
+#endif
 	p->sources = val;
 }
 /*
@@ -297,9 +301,17 @@ static unsigned int detect_key(unsigned int suspend_from)
 	int exit_reason = 0;
 	unsigned *irq = (unsigned *)WAKEUP_SRC_IRQ_ADDR_BASE;
 	unsigned char adc_key_cnt = 0;
+#ifdef CONFIG_AUDIO_WAKEUP
+	char aud_pwr_en = 0;
+	unsigned skip_cnt = 100;
+	/* unsigned th = 0, v = 0; */
+#endif
 
 	init_remote();
 	saradc_enable();
+#ifdef CONFIG_AUDIO_WAKEUP
+	aud_pwr_en = enable_pdm();
+#endif
 
 	do {
 		if (irq[IRQ_AO_IR_DEC] == IRQ_AO_IR_DEC_NUM) {
@@ -329,7 +341,35 @@ static unsigned int detect_key(unsigned int suspend_from)
 				adc_key_cnt = 0;
 			}
 		}
-
+#ifdef CONFIG_AUDIO_WAKEUP
+#if 1
+		if (aud_pwr_en && irq[IRQ_AUDIO_PWR_DEC] == IRQ_AUDIO_PWR_NUM) {
+			if (skip_cnt > 0) {
+				skip_cnt--;
+			} else {
+				irq[IRQ_AUDIO_PWR_DEC] = 0xFFFFFFFF;
+				exit_reason = RTC_WAKEUP;
+			}
+		}
+#else
+		if (aud_pwr_en && skip_cnt == 0) {
+			v = readl(EE_AUDIO_POW_DET_VALUE);
+			th = readl(EE_AUDIO_POW_DET_TH_HI);
+			v = v & ~(1<<31);
+			if (v > th) {
+				aud_pwr_cnt++;
+				if (aud_pwr_cnt > 10) {
+					dbg_print("audio pwr val:", v);
+					dbg_print("audio pwr th:", th);
+					irq[IRQ_AUDIO_PWR_DEC] = 0xFFFFFFFF;
+					exit_reason = RTC_WAKEUP;
+				}
+			} else
+				aud_pwr_cnt = 0;
+		} else
+			skip_cnt--;
+#endif
+#endif
 #ifdef CONFIG_BT_WAKEUP
 		if (irq[IRQ_GPIO0] == IRQ_GPIO0_NUM) {
 			irq[IRQ_GPIO0] = 0xFFFFFFFF;
