@@ -48,6 +48,11 @@
 #include <linux/sizes.h>
 #include <asm/arch/clock.h>
 #include <asm/arch/board_id.h>
+
+#ifdef CONFIG_AXP152_POWER
+#include <axp152.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 //new static eth setup
@@ -299,34 +304,38 @@ static void board_i2c_set_pinmux(void){
 	udelay(10);
 };
 #endif
+
 struct aml_i2c_platform g_aml_i2c_plat = {
-	.wait_count         = 1000000,
-	.wait_ack_interval  = 5,
-	.wait_read_interval = 5,
-	.wait_xfer_interval = 5,
-	.master_no          = AML_I2C_MASTER_AO,
-	.use_pio            = 0,
-	.master_i2c_speed   = AML_I2C_SPPED_400K,
-	.master_ao_pinmux = {
-		.scl_reg    = (unsigned long)MESON_I2C_MASTER_AO_GPIOAO_4_REG,
-		.scl_bit    = MESON_I2C_MASTER_AO_GPIOAO_4_BIT,
-		.sda_reg    = (unsigned long)MESON_I2C_MASTER_AO_GPIOAO_5_REG,
-		.sda_bit    = MESON_I2C_MASTER_AO_GPIOAO_5_BIT,
-	}
 };
-#if 0
+/* multi i2c bus */
+struct aml_i2c_platform g_aml_i2c_ports[] = {
+	{
+		.wait_count         = 1000000,
+		.wait_ack_interval  = 5,
+		.wait_read_interval = 5,
+		.wait_xfer_interval = 5,
+		.master_no          = AML_I2C_MASTER_AO,
+		.use_pio            = 0,
+		.master_i2c_speed   = CONFIG_SYS_I2C_SPEED,
+		.master_ao_pinmux = {
+			.scl_reg    = (unsigned long)MESON_I2C_MASTER_AO_GPIOAO_10_REG,
+			.scl_bit    = MESON_I2C_MASTER_AO_GPIOAO_10_BIT,
+			.sda_reg    = (unsigned long)MESON_I2C_MASTER_AO_GPIOAO_11_REG,
+			.sda_bit    = MESON_I2C_MASTER_AO_GPIOAO_11_BIT,
+		}
+	},
+
+	/* sign of end */
+	{.master_i2c_speed=0},
+};
+
 static void board_i2c_init(void)
 {
-	//set I2C pinmux with PCB board layout
-	board_i2c_set_pinmux();
-
-	//Amlogic I2C controller initialized
-	//note: it must be call before any I2C operation
-	aml_i2c_init();
+	extern void aml_i2c_set_ports(struct aml_i2c_platform *i2c_plat);
+	aml_i2c_set_ports(g_aml_i2c_ports);
 
 	udelay(10);
 }
-#endif
 #endif
 
 #if defined(CONFIG_BOARD_EARLY_INIT_F)
@@ -431,6 +440,38 @@ void power_save_pre(void)
 	clrbits_le32(P_HHI_MIPI_CNTL1, 0xffffffff);
 	clrbits_le32(P_HHI_MIPI_CNTL2, 0xffdfffff);
 }
+
+#ifdef CONFIG_AXP152_POWER
+int board_axp152_init(void)
+{
+	int ret = 0;
+
+	ret = axp152_init();
+
+	/* Set VDDQ to 1.35V */
+	ret |= axp152_set_dcdc3(1350);
+
+	/* Set VDDIO_AO to 3.1V */
+	ret |= axp152_set_ldo2(3300);
+
+	/* Set VDDIO to 3.1V */
+	ret |= axp152_set_aldo1(AXP152_ALDO_3V3);
+
+	/* Set VDD_EE to 0.9V */
+	ret |= axp152_set_dcdc4(900);
+
+	/*
+	 * TODO:
+	 *   * enable GPIO2 as a 3.3V LDO
+	 *   * enable LDO0 3.3V
+	 */
+
+	printf("AXP152 init done: %d\n", ret);
+
+	return ret;
+}
+#endif
+
 int board_init(void)
 {
 #ifdef CONFIG_AML_V2_FACTORY_BURN
@@ -445,6 +486,15 @@ int board_init(void)
 	extern int amlnf_init(unsigned char flag);
 	amlnf_init(0);
 #endif
+
+#ifdef CONFIG_SYS_I2C_AML
+	board_i2c_init();
+#endif
+
+#ifdef CONFIG_AXP152_POWER
+	board_axp152_init();
+#endif
+
 	if (get_cpu_id().package_id == MESON_CPU_PACKAGE_ID_A113X)
 		power_save_pre();
 	return 0;
