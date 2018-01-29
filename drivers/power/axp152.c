@@ -12,6 +12,7 @@ enum axp152_reg {
 	AXP152_CHIP_VERSION = 0x3,
 	AXP152_DCDC2_VOLTAGE = 0x23,
 	AXP152_DCDC3_VOLTAGE = 0x27,
+	AXP152_ALDO_VOLTAGE = 0x28,
 	AXP152_DCDC4_VOLTAGE = 0x2B,
 	AXP152_LDO2_VOLTAGE = 0x2A,
 	AXP152_SHUTDOWN = 0x32,
@@ -37,6 +38,36 @@ static u8 axp152_mvolt_to_target(int mvolt, int min, int max, int div)
 		mvolt = max;
 
 	return (mvolt - min) / div;
+}
+
+int axp152_set_aldo1(enum aldo_voltage aldo_val)
+{
+	int ret;
+	u8 current;
+
+	ret = axp152_read(AXP152_ALDO_VOLTAGE, &current);
+	if (ret)
+		return ret;
+
+	current &= 0x0F;
+	current |= (aldo_val << 4) & 0xF0;
+
+	return axp152_write(AXP152_ALDO_VOLTAGE, current);
+}
+
+int axp152_set_aldo2(enum aldo_voltage aldo_val)
+{
+	int ret;
+	u8 current;
+
+	ret = axp152_read(AXP152_ALDO_VOLTAGE, &current);
+	if (ret)
+		return ret;
+
+	current &= 0xF0;
+	current |= aldo_val & 0x0F;
+
+	return axp152_write(AXP152_ALDO_VOLTAGE, current);
 }
 
 int axp152_set_dcdc2(int mvolt)
