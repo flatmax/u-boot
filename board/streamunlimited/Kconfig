@@ -1,0 +1,8 @@
+
+config SUE_S1832
+	bool "Support StreamUnlimited stream1832 module"
+	default n
+
+if SUE_S1832
+source "board/streamunlimited/stream1832/Kconfig"
+endif
