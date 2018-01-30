@@ -52,6 +52,9 @@
 #ifdef CONFIG_AXP152_POWER
 #include <axp152.h>
 #endif
+#include <asm/saradc.h>
+
+#include "adc_codes.h"
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -577,6 +580,26 @@ phys_size_t get_effective_memsize(void)
 #endif
 }
 
+unsigned int get_board_id()
+{
+	int ch0, ch1;
+	int code_ch0, code_ch1;
+
+	saradc_enable();
+	ch0 = get_adc_sample_gxbb_12bit(0);
+	mdelay(1);
+	ch1 = get_adc_sample_gxbb_12bit(1);
+	saradc_disable();
+
+	code_ch0 = get_adc_code(ch0);
+	code_ch1 = get_adc_code(ch1);
+
+	printf("ADC values: ADC_CH0: 0x%03X, ADC_CH1: 0x%03X\n", ch0, ch1);
+	printf("ADC codes : ADC_CH0: 0x%03X, ADC_CH1: 0x%03X\n", code_ch0, code_ch1);
+
+	return 0;
+}
+
 #ifdef CONFIG_MULTI_DTB
 int checkhw(char * name)
 {
@@ -598,6 +621,7 @@ int checkhw(char * name)
 
 	printf("%s board adc:%d\n", __func__, b_id);
 
+#if 0
 	switch (b_id) {
 	case 0:
 	case 1:
@@ -624,6 +648,7 @@ int checkhw(char * name)
 
 	if (name != NULL)
 		strcpy(name, loc_name);
+#endif
 
 	printf("[MPI] HACK! selecting axg_sue_s1832 device-tree\n");
 	strcpy(name, "axg_sue_s1832");
