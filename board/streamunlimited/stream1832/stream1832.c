@@ -457,14 +457,14 @@ int board_axp152_init(void)
 	/* Set VDDIO to 3.1V */
 	ret |= axp152_set_aldo1(AXP152_ALDO_3V3);
 
-	/* Set VDD_EE to 0.9V */
-	ret |= axp152_set_dcdc4(900);
+	/* Set VDD_EE to 0.95V */
+	ret |= axp152_set_dcdc4(950);
 
-	/*
-	 * TODO:
-	 *   * enable GPIO2 as a 3.3V LDO
-	 *   * enable LDO0 3.3V
-	 */
+	/* Enable 3V3_OUT */
+	ret |= axp152_set_ldo0(AXP152_LDO0_3V3, AXP152_LDO0_CUR_1500MA);
+
+	/* Enable WIFI_VRF */
+	ret |= axp152_set_gpio2_ldo(3300);
 
 	printf("AXP152 init done: %d\n", ret);
 
