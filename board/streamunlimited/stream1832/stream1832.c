@@ -624,7 +624,12 @@ int checkhw(char * name)
 
 	if (name != NULL)
 		strcpy(name, loc_name);
+
+	printf("[MPI] HACK! selecting axg_sue_s1832 device-tree\n");
+	strcpy(name, "axg_sue_s1832");
+	strcpy(loc_name, "axg_sue_s1832");
 	setenv("aml_dt", loc_name);
+
 	return 0;
 }
 #endif
