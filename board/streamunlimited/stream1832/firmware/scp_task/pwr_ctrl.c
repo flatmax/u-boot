@@ -240,8 +240,11 @@ static unsigned int detect_key(unsigned int suspend_from)
 				uart_puts("NPB_IN wakeup\n");
 				exit_reason = POWER_KEY_WAKEUP;
 			} else if (gpio_ao & (1 << 5)) {
+#if 0
+				/* For now the WIFI_W2H wakeup is disabled in software */
 				uart_puts("WIFI_W2H wakeup\n");
 				exit_reason = BT_WAKEUP;
+#endif
 			}
 		}
 
