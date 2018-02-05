@@ -21,210 +21,171 @@
 
 #include <gpio.h>
 
-static int pwm_voltage_table_ee[][2] = {
-	{ 0x1c0000,  810},
-	{ 0x1b0001,  820},
-	{ 0x1a0002,  830},
-	{ 0x190003,  840},
-	{ 0x180004,  850},
-	{ 0x170005,  860},
-	{ 0x160006,  870},
-	{ 0x150007,  880},
-	{ 0x140008,  890},
-	{ 0x130009,  900},
-	{ 0x12000a,  910},
-	{ 0x11000b,  920},
-	{ 0x10000c,  930},
-	{ 0x0f000d,  940},
-	{ 0x0e000e,  950},
-	{ 0x0d000f,  960},
-	{ 0x0c0010,  970},
-	{ 0x0b0011,  980},
-	{ 0x0a0012,  990},
-	{ 0x090013, 1000},
-	{ 0x080014, 1010},
-	{ 0x070015, 1020},
-	{ 0x060016, 1030},
-	{ 0x050017, 1040},
-	{ 0x040018, 1050},
-	{ 0x030019, 1060},
-	{ 0x02001a, 1070},
-	{ 0x01001b, 1080},
-	{ 0x00001c, 1090}
-};
-
-#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
-
-#if 0
-
-#define ON 1
-#define OFF 0
-
-static void power_switch_to_ee(unsigned int pwr_ctrl)
+/*
+ * NOTE: Those i2c_* functions only use the i2c_ao bus and require the i2c
+ *       interface to be already configured from Linux.
+ */
+static void i2c_write(int slave_addr, int reg, int val)
 {
-	if (pwr_ctrl == ON) {
-		writel(readl(AO_RTI_PWR_CNTL_REG0) | (0x1 << 9), AO_RTI_PWR_CNTL_REG0);
-		_udelay(1000);
-		writel(readl(AO_RTI_PWR_CNTL_REG0)
-			& (~((0x3 << 3) | (0x1 << 1))), AO_RTI_PWR_CNTL_REG0);
-	} else {
-		writel(readl(AO_RTI_PWR_CNTL_REG0)
-		       | ((0x3 << 3) | (0x1 << 1)), AO_RTI_PWR_CNTL_REG0);
+	int i;
 
-		writel(readl(AO_RTI_PWR_CNTL_REG0) & (~(0x1 << 9)),
-		       AO_RTI_PWR_CNTL_REG0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST1);
 
-	}
-}
+	writel((slave_addr & 0x3F) << 1, AO_I2C_M_0_SLAVE_ADDR);
 
-#endif
+	// 0x1 - start
+	// 0x2 - slave addr write
+	// 0x4 - data
+	// 0x4 - data
+	// 0x5 - data last
+	writel(0x54421, AO_I2C_M_0_TOKEN_LIST0);
+
+	writel((reg & 0xFF) | ((val & 0xFF) << 8), AO_I2C_M_0_WDATA_REG0);
+
+	/* start xfer */
+	writel(readl(AO_I2C_M_0_CONTROL_REG) & ~(1), AO_I2C_M_0_CONTROL_REG);
+	writel(readl(AO_I2C_M_0_CONTROL_REG) | 1, AO_I2C_M_0_CONTROL_REG);
 
 
-static void set_vddee_voltage(unsigned int target_voltage)
-{
-	unsigned int to;
-
-	for (to = 0; to < ARRAY_SIZE(pwm_voltage_table_ee); to++) {
-		if (pwm_voltage_table_ee[to][1] >= target_voltage) {
+	for (i = 0; i < 1000000; i++) {
+		_udelay(5);
+		if (!(readl(AO_I2C_M_0_CONTROL_REG) & (1 << 2)))
 			break;
-		}
 	}
 
-	if (to >= ARRAY_SIZE(pwm_voltage_table_ee)) {
-		to = ARRAY_SIZE(pwm_voltage_table_ee) - 1;
-	}
-
-	writel(pwm_voltage_table_ee[to][0],AO_PWM_PWM_D);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST1);
 }
+
+static int i2c_read(int slave_addr, int reg)
+{
+	int i;
+	int val;
+
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST1);
+
+	writel((slave_addr & 0x3F) << 1, AO_I2C_M_0_SLAVE_ADDR);
+
+	// 0x1 - start
+	// 0x2 - slave addr write
+	// 0x4 - data
+	writel(0x421, AO_I2C_M_0_TOKEN_LIST0);
+
+	// 0x12
+	writel((reg & 0xFF), AO_I2C_M_0_WDATA_REG0);
+
+	/* start xfer */
+	writel(readl(AO_I2C_M_0_CONTROL_REG) & ~(1), AO_I2C_M_0_CONTROL_REG);
+	writel(readl(AO_I2C_M_0_CONTROL_REG) | 1, AO_I2C_M_0_CONTROL_REG);
+
+
+	for (i = 0; i < 1000000; i++) {
+		_udelay(5);
+		if (!(readl(AO_I2C_M_0_CONTROL_REG) & (1 << 2)))
+			break;
+	}
+
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST1);
+
+
+
+	// 0x1 - start
+	// 0x3 - slave addr read
+	// 0x5 - data last
+	writel(0x531, AO_I2C_M_0_TOKEN_LIST0);
+
+	/* start xfer */
+	writel(readl(AO_I2C_M_0_CONTROL_REG) & ~(1), AO_I2C_M_0_CONTROL_REG);
+	writel(readl(AO_I2C_M_0_CONTROL_REG) | 1, AO_I2C_M_0_CONTROL_REG);
+
+	for (i = 0; i < 1000000; i++) {
+		_udelay(5);
+		if (!(readl(AO_I2C_M_0_CONTROL_REG) & (1 << 2)))
+			break;
+	}
+
+	val = readl(AO_I2C_M_0_RDATA_REG0) & 0xFF;
+
+	_udelay(5);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST0);
+	writel(0x00, AO_I2C_M_0_TOKEN_LIST1);
+
+	return val;
+}
+
+#define AXP152_VDD_825MV	0x05
+
+int old_output_ctrl;
+int old_vddee_setting;
 
 static void power_off_at_24M(unsigned int suspend_from)
 {
-	/*set gpioao_13 low to power off vcc 5v*/
-	writel(readl(AO_GPIO_O_EN_N) & (~(1 << 13)) & (~(1 << 29)), AO_GPIO_O_EN_N);
-	writel(readl(AO_RTI_PINMUX_REG1) & (~(0xf << 20)), AO_RTI_PINMUX_REG1);
+	int reg;
 
-	/*set gpioao_12 high to power off vcc 3.3v*/
-	writel((readl(AO_GPIO_O_EN_N) & (~(1 << 12))) | (1 << 28), AO_GPIO_O_EN_N);
-	writel(readl(AO_RTI_PINMUX_REG1) & (~(0xf << 16)), AO_RTI_PINMUX_REG1);
+	old_output_ctrl = i2c_read(0x30, 0x12);
+	reg = old_output_ctrl;
 
-	/*power off VDDCPU*/
-	writel(readl(AO_GPIO_O_EN_N) & (~(1 << 31)), AO_GPIO_O_EN_N);
+#if 0
+	/* Turning this supply off will hang the kernel on resuming */
+	/* disable DCDC1 (VDDIO_1V8) */
+	reg &= ~(1 << 7);
+#endif
 
-	/*pull down BT_EN*/
-	writel(readl(PREG_PAD_GPIO2_O) & (~(1<<21)), PREG_PAD_GPIO2_O);
-	writel(readl(PREG_PAD_GPIO2_EN_N) & (~(1<<21)), PREG_PAD_GPIO2_EN_N);
-	writel(readl(PERIPHS_PIN_MUX_6) & (~(0xf<<20)),PERIPHS_PIN_MUX_6);
+	/* disable DCDC2 (VDDCPU) */
+	reg &= ~(1 << 6);
 
-	/*step down ee voltage*/
-	set_vddee_voltage(CONFIG_VDDEE_SLEEP_VOLTAGE);
+	/* disable ALDO1 (VDDIO_3V3) */
+	reg &= ~(1 << 3);
 
-/*
-	uart_puts("81gate = 0x");
-	uart_put_hex(readl(0xff63c140),32);
-	uart_puts("\n");
-	uart_puts("81gate = 0x");
-	uart_put_hex(readl(0xff63c144),32);
-	uart_puts("\n");
-	uart_puts("81gate = 0x");
-	uart_put_hex(readl(0xff63c148),32);
+	i2c_write(0x30, 0x12, reg);
+
+	uart_puts("output_ctrl: old: 0x");
+	uart_put_hex(old_output_ctrl, 8);
+	uart_puts(", new: 0x");
+	uart_put_hex(reg, 8);
 	uart_puts("\n");
 
-	writel(0,0xff63c000);
-	writel(0,0xff63c004);
-	writel(0,0xff63c008);
 
-	uart_puts("mipi = 0x");
-	uart_put_hex(readl(0xff63c000),32);
-	uart_puts("\n");
-	uart_put_hex(readl(0xff63c004),32);
-	uart_puts("\n");
-	uart_put_hex(readl(0xff63c008),32);
-	uart_puts("\n");
 
-	uart_puts("PCIE_CML = 0x");
-	uart_put_hex(readl(0xff63c0f0),32);
-	uart_puts("\n");
+#if 0
+	/* TODO: we cannot disable VDD_EE, instead we should lower it at least */
+	/* disable DCDC4 (VDD_EE) */
+	reg &= ~(1 << 4);
+#endif
 
-	uart_puts("PCIE_PLL = 0x");
-	uart_put_hex(readl(0xff63c0d8),32);
-	uart_puts("\n");
+	/* backup old VDD_EE setting */
+	old_vddee_setting = i2c_read(0x30, 0x2B);
 
-	uart_puts("AO_SAR_CLK = 0x");
-	uart_put_hex(readl(0xFF800090),32);
+	/* set VDD_EE to 825mV */
+	reg = AXP152_VDD_825MV;
+	i2c_write(0x30, 0x2B, reg);
+
+	uart_puts("vdd_ee: old: 0x");
+	uart_put_hex(old_vddee_setting, 8);
+	uart_puts(", new: 0x");
+	uart_put_hex(reg, 8);
 	uart_puts("\n");
 
-	uart_puts("GP0_PLL = 0x");
-	uart_put_hex(readl(HHI_GP0_PLL_CNTL),32);
-	uart_puts("\n");
-	uart_puts("MPLL = 0x");
-	uart_put_hex(readl(HHI_MPLL_CNTL),32);
-	uart_puts("\n");
-	uart_puts("HIFI_PLL = 0x");
-	uart_put_hex(readl(HHI_HIFI_PLL_CNTL),32);
-	uart_puts("\n");
-	writel(0,HHI_HIFI_PLL_CNTL2);
-	writel(0,HHI_HIFI_PLL_CNTL);
 
-	uart_puts("HHI_PLL6 = 0x");
-	uart_put_hex(readl(HHI_MPLL_CNTL6),32);
-	uart_puts("\n");
-
-	uart_puts("SYS_PLL = 0x");
-	uart_put_hex(readl(HHI_SYS_PLL_CNTL),32);
-	uart_puts("\n");
-
-	writel(0,0xff637000);
-	writel(0,0xff637004);
-	writel(0,0xff637008);
-	writel(0,0xff63700c);
-	writel(0,0xff637010);
-	writel(0,0xff637014);
-	writel(0,0xff637018);
-
-	writel(0, HHI_MPLL_CNTL);
-	writel(0, HHI_MPLL_CNTL2);
-	writel(0, HHI_MPLL_CNTL3);
-	writel(0, HHI_MPLL_CNTL4);
-	writel(0, HHI_MPLL_CNTL5);
-	writel(0, HHI_MPLL_CNTL6);
-	writel(0, HHI_MPLL_CNTL7);
-	writel(0, HHI_MPLL_CNTL8);
-	writel(0, HHI_MPLL_CNTL9);
-	writel(0, HHI_MPLL_CNTL10);
-	writel(0, HHI_MPLL3_CNTL0);
-	writel(0, HHI_MPLL3_CNTL1);
-
-	writel(0, HHI_SYS_PLL_CNTL);
-	writel(0, HHI_SYS_PLL_CNTL1);
-	writel(0, HHI_SYS_PLL_CNTL2);
-	writel(0, HHI_SYS_PLL_CNTL3);
-	writel(0, HHI_SYS_PLL_CNTL4);
-	writel(0, HHI_SYS_PLL_CNTL5);
-
-	writel(0x088800e1,0xff63c140);
-	writel(0xe0800000,0xff63c144);
-	writel(0x44000006,0xff63c148);
-*/
+	_udelay(1000);
 }
 
 static void power_on_at_24M(unsigned int suspend_from)
 {
-	/*step up ee voltage*/
-	set_vddee_voltage(CONFIG_VDDEE_INIT_VOLTAGE);
+	uart_puts("restoring vddee to: 0x");
+	uart_put_hex(old_vddee_setting, 8);
+	uart_puts("\n");
+	i2c_write(0x30, 0x2B, old_vddee_setting);
 
-	/*power on VDDCPU*/
-	writel(readl(AO_GPIO_O_EN_N) | (1 << 31), AO_GPIO_O_EN_N);
-	_udelay(100);
+	uart_puts("restoring output_ctrl to: 0x");
+	uart_put_hex(old_output_ctrl, 8);
+	uart_puts("\n");
+	i2c_write(0x30, 0x12, old_output_ctrl);
 
-	/*set gpioao_12 low to power om vcc 3.3v*/
-	writel(readl(AO_GPIO_O_EN_N) & (~(1 << 12)) & (~(1 << 28)), AO_GPIO_O_EN_N);
-	writel(readl(AO_RTI_PINMUX_REG1) & (~(0xf << 16)), AO_RTI_PINMUX_REG1);
-	_udelay(200);
-
-	/*set gpioao_13 high to power on vcc 5v*/
-	writel((readl(AO_GPIO_O_EN_N) & (~(1 << 13))) | (1 << 29), AO_GPIO_O_EN_N);
-	writel(readl(AO_RTI_PINMUX_REG1) & (~(0xf << 20)), AO_RTI_PINMUX_REG1);
-	_udelay(10000);
+	_udelay(1000);
 }
 
 void get_wakeup_source(void *response, unsigned int suspend_from)
@@ -233,81 +194,54 @@ void get_wakeup_source(void *response, unsigned int suspend_from)
 	unsigned val;
 
 	p->status = RESPONSE_OK;
-	val = (POWER_KEY_WAKEUP_SRC | AUTO_WAKEUP_SRC | REMOTE_WAKEUP_SRC |
-	       ETH_PHY_WAKEUP_SRC | BT_WAKEUP_SRC);
+	val = (POWER_KEY_WAKEUP_SRC | AUTO_WAKEUP_SRC | ETH_PHY_WAKEUP_SRC | BT_WAKEUP_SRC);
 
 	p->sources = val;
 	p->gpio_info_count = 0;
 }
-/*
-static unsigned int mpeg_clk;
-void clk81_switch_to_24M(int flag)//for 1M
-{
-	unsigned int val;
-	if (flag) {
-		//val = readl(HHI_MPEG_CLK_CNTL);
-		//val = val | (0x1 << 8);
-		uart_puts("val3 = 0x");
-		uart_put_hex(mpeg_clk,32);
-		uart_puts("ddddd\n");
-		writel(mpeg_clk, HHI_MPEG_CLK_CNTL);
-		uart_puts("val4 = 0x");
-		uart_put_hex(readl(HHI_MPEG_CLK_CNTL),32);
-		_udelay(100);
-		uart_puts("val5 = 0x");
-	} else{
-		val = readl(HHI_MPEG_CLK_CNTL);
-		mpeg_clk = val;
-		uart_puts("val = 0x");
-		uart_put_hex(val,32);
-	//	val = (val & (~(1<<9)) & (~(0x7<<12)) & (~(1<<31)) & (~(0x7f<<0))) | (3<<7) | (0x0<<0);//1M
-		val = (val & (~((1<<9) | (0x7<<12) | (1<<31) | (0x7f<<0)))) | (3<<7) | (0x17<<0);//12M
-		uart_puts("val2 = 0x");
-		uart_put_hex(val,32);
-	//	val = val & (~(0x3<<8)) ;
-		writel(val, HHI_MPEG_CLK_CNTL);
-	//	writel(readl(HHI_MPEG_CLK_CNTL) | (1<<8), HHI_MPEG_CLK_CNTL);
-		_udelay(100);
-	}
-}
-*/
+
 extern void __switch_idle_task(void);
 
 static unsigned int detect_key(unsigned int suspend_from)
 {
 	int exit_reason = 0;
 	unsigned *irq = (unsigned *)WAKEUP_SRC_IRQ_ADDR_BASE;
-	unsigned char adc_key_cnt = 0;
 
-	init_remote();
-	saradc_enable();
+	/* Set GPPIOAO_3 and GPIOAO_5 to input */
+	writel(readl(AO_GPIO_O_EN_N) | (1 << 3) | (1 << 5), AO_GPIO_O_EN_N);
+
+	/* Set GPIOAO_3 and GPIOAO_5 mux as GPIO */
+	writel(readl(AO_RTI_PINMUX_REG0) & (~(0xf << 12) & ~(0xf << 20)), AO_RTI_PINMUX_REG0);
+
+	/* Enable pull-up for GPIOAO_5 */
+	writel(readl(PAD_PULL_UP_REG0) | (1 << 5), PAD_PULL_UP_REG0);
+	writel(readl(AO_RTI_PULL_UP_REG) | (1 << 5), AO_RTI_PULL_UP_REG);
 
 	do {
-		if (irq[IRQ_AO_IR_DEC] == IRQ_AO_IR_DEC_NUM) {
-			irq[IRQ_AO_IR_DEC] = 0xFFFFFFFF;
-			if (remote_detect_key())
-				exit_reason = REMOTE_WAKEUP;
-		}
-
 		if (irq[IRQ_ETH_PHY] == IRQ_ETH_PHY_NUM) {
 			irq[IRQ_ETH_PHY] = 0xFFFFFFFF;
+			uart_puts("ETH_PHY wakeup\n");
 			exit_reason = ETH_PHY_WAKEUP;
 		}
 
 		if (irq[IRQ_VRTC] == IRQ_VRTC_NUM) {
 			irq[IRQ_VRTC] = 0xFFFFFFFF;
+			uart_puts("RTC wakeup\n");
 			exit_reason = RTC_WAKEUP;
 		}
 
 		if (irq[IRQ_AO_TIMERA] == IRQ_AO_TIMERA_NUM) {
+			unsigned int gpio_ao;
 			irq[IRQ_AO_TIMERA] = 0xFFFFFFFF;
-			if (check_adc_key_resume()) {
-				adc_key_cnt++;
-				/*using variable 'adc_key_cnt' to eliminate the dithering of the key*/
-				if (2 == adc_key_cnt)
-					exit_reason = POWER_KEY_WAKEUP;
-			} else {
-				adc_key_cnt = 0;
+
+			gpio_ao = readl(AO_GPIO_I);
+
+			if (gpio_ao & (1 << 3)) {
+				uart_puts("NPB_IN wakeup\n");
+				exit_reason = POWER_KEY_WAKEUP;
+			} else if (gpio_ao & (1 << 5)) {
+				uart_puts("WIFI_W2H wakeup\n");
+				exit_reason = BT_WAKEUP;
 			}
 		}
 
@@ -316,8 +250,6 @@ static unsigned int detect_key(unsigned int suspend_from)
 		else
 			__switch_idle_task();
 	} while (1);
-
-	saradc_disable();
 
 	return exit_reason;
 }
