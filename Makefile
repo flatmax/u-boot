@@ -911,11 +911,11 @@ endif
 
 ifeq ($(CONFIG_NEED_BL301), y)
 $(buildtree)/scp_task/bl301.bin:
-	$(Q)$(MAKE) -C $(srctree)/$(CPUDIR)/${SOC}/firmware/scp_task
+	# $(Q)$(MAKE) -C $(srctree)/$(CPUDIR)/${SOC}/firmware/scp_task
 
 .PHONY : bl301.bin
 bl301.bin: tools prepare acs.bin bl21.bin $(buildtree)/scp_task/bl301.bin
-	$(Q)cp $(buildtree)/scp_task/bl301.bin $(FIP_FOLDER_SOC)/bl301.bin -f
+	# $(Q)cp $(buildtree)/scp_task/bl301.bin $(FIP_FOLDER_SOC)/bl301.bin -f
 	$(Q)$(FIP_FOLDER)/blx_fix.sh \
 		$(FIP_FOLDER_SOC)/bl30.bin \
 		$(FIP_FOLDER_SOC)/zero_tmp \
@@ -1505,7 +1505,7 @@ distclean: mrproper
 	@rm -rf $(buildtree)/*
 	@rm -f $(FIP_FOLDER_SOC)/acs.bin
 	@rm -f $(FIP_FOLDER_SOC)/bl2_acs.bin
-	@rm -f $(FIP_FOLDER_SOC)/bl301.bin
+	# @rm -f $(FIP_FOLDER_SOC)/bl301.bin
 	@rm -f $(FIP_FOLDER_SOC)/bl33.bin
 	@rm -f $(FIP_FOLDER_SOC)/fip.bin
 	@rm -f $(FIP_FOLDER_SOC)/boot.bin
