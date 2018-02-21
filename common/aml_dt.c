@@ -91,6 +91,14 @@ unsigned long __attribute__((unused))
 
 	/*printf("      Process device tree. dt magic: %x\n", dt_magic);*/
 	if (dt_magic == DT_HEADER_MAGIC) {/*normal dtb*/
+
+		/* This is currently a hack to call checkhw every time so we print the ADC values */
+		char *aml_dt_buf;
+		aml_dt_buf = (char *)malloc(sizeof(char)*64);
+		memset(aml_dt_buf, 0, sizeof(aml_dt_buf));
+		checkhw(aml_dt_buf);
+		free(aml_dt_buf);
+
 		printf("      Single dtb detected\n");
 		if (gzip_format) {
 			memcpy((void *)dt_entry, (void *)fdt_addr, DTB_MAX_SIZE);
