@@ -356,13 +356,10 @@ int board_early_init_f(void){
 
 static void gpio_set_vbus_power(char is_power_on)
 {
-	if (is_power_on) {
-		clrbits_le32(P_AO_GPIO_O_EN_N, (1<<5));
-		setbits_le32(P_AO_GPIO_O_EN_N, (1<<21));
-	} else {
-		clrbits_le32(P_AO_GPIO_O_EN_N, (1<<5));
-		clrbits_le32(P_AO_GPIO_O_EN_N, (1<<21));
-	}
+	if (is_power_on)
+		clrbits_le32(P_AO_GPIO_O_EN_N, (1<<12));
+	else
+		setbits_le32(P_AO_GPIO_O_EN_N, (1<<12));
 }
 
 struct amlogic_usb_config g_usb_config_GXL_skt={
