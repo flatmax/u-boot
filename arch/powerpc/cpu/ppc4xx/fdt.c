@@ -12,7 +12,7 @@
 #include <asm/ppc4xx.h>
 
 #if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 #include <asm/4xx_pcie.h>
 

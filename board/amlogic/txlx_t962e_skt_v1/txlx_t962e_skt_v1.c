@@ -24,7 +24,7 @@
 #include <errno.h>
 #include <environment.h>
 #include <fdt_support.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/arch/secure_apb.h>
 #ifdef CONFIG_SYS_I2C_AML
 #include <aml_i2c.h>

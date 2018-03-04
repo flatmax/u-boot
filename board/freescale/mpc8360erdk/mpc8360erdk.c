@@ -19,7 +19,7 @@
 #include <asm/io.h>
 #include <asm/mmu.h>
 #include <pci.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 const qe_iop_conf_t qe_iop_conf_tab[] = {
 	/* MDIO */

@@ -13,7 +13,7 @@
 #include <common.h>
 #include <mpc5xxx.h>
 #include <miiphy.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 #if defined(CONFIG_STATUS_LED)
 #include <status_led.h>

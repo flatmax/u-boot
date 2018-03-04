@@ -27,7 +27,7 @@
 #include <linux/ctype.h>
 
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 #endif /* CONFIG_OF_LIBFDT */
 

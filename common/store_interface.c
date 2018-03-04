@@ -14,7 +14,7 @@
 #include <linux/err.h>
 #include<partition_table.h>
 #include<emmc_partitions.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <linux/string.h>
 #include <asm/cpu_id.h>
 #include <asm/arch/bl31_apis.h>

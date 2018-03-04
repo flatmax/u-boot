@@ -17,7 +17,7 @@
 
 #include <common.h>
 #include <inttypes.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <malloc.h>
 #include <asm/u-boot-x86.h>
 #include <asm/relocate.h>

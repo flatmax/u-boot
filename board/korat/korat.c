@@ -15,7 +15,7 @@
 #include <common.h>
 #include <fdt_support.h>
 #include <i2c.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/ppc440.h>
 #include <asm/bitops.h>
 #include <asm/ppc4xx-gpio.h>

@@ -17,7 +17,7 @@
 #include <malloc.h>
 #include <asm/arch/gpio.h>
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 #ifdef CONFIG_SYS_I2C_AML
 #include <aml_i2c.h>

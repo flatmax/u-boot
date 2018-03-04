@@ -1,6 +1,6 @@
 #include "key_manage_i.h"
 #include <fdt.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 #define UNIFYKEY_DATAFORMAT_HEXDATA	    "hexdata"
 #define UNIFYKEY_DATAFORMAT_HEXASCII	"hexascii"

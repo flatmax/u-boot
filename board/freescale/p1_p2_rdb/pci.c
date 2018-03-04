@@ -11,7 +11,7 @@
 #include <asm/fsl_serdes.h>
 #include <asm/io.h>
 #include <asm/fsl_pci.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 
 DECLARE_GLOBAL_DATA_PTR;

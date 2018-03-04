@@ -12,7 +12,7 @@
 #include <mpc5xxx.h>
 #include <pci.h>
 #include <asm/processor.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <netdev.h>
 
 #if defined(CONFIG_LITE5200B)

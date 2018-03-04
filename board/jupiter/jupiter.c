@@ -12,7 +12,7 @@
 #include <mpc5xxx.h>
 #include <pci.h>
 #include <asm/processor.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 #define SDRAM_DDR	0
 #if 1

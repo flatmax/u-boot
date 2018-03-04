@@ -24,7 +24,7 @@
 #include <asm/cpu_id.h>
 #include <asm/arch/secure_apb.h>
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 
 #define FDT_DEFAULT_ADDRESS  0x01000000

@@ -11,7 +11,7 @@
 
 #include <common.h>
 #include <errno.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 #include <asm/ppc4xx.h>
 #include <asm/ppc4xx-gpio.h>

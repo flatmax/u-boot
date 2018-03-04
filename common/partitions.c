@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include <linux/err.h>
 #include <partition_table.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/arch/bl31_apis.h>
 
 extern int is_dtb_encrypt(unsigned char *buffer);

@@ -16,7 +16,7 @@
 #include <android_image.h>
 #include <asm/arch/bl31_apis.h>
 #include <asm/arch/secure_apb.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 typedef struct andr_img_hdr boot_img_hdr;
 

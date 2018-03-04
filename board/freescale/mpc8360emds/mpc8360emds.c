@@ -20,7 +20,7 @@
 #include <asm/io.h>
 #include <asm/mmu.h>
 #if defined(CONFIG_OF_LIBFDT)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 #include <hwconfig.h>
 #include <fdt_support.h>

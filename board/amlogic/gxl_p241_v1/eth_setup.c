@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <environment.h>
 #include <fdt_support.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/arch/eth_setup.h>
 /*
  *

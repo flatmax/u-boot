@@ -15,7 +15,7 @@
 #include <mpc5xxx.h>
 #include <pci.h>
 #include <asm/processor.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <netdev.h>
 
 #ifdef CONFIG_VIDEO_SM501

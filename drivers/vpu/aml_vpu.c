@@ -23,7 +23,7 @@
 #include <config.h>
 #include <linux/kernel.h>
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 #include <vpu.h>
 #include "aml_vpu_reg.h"

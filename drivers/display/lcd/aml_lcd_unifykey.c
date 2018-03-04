@@ -17,7 +17,7 @@
 #include <malloc.h>
 #include <asm/arch/gpio.h>
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 #include <amlogic/keyunify.h>
 #include <amlogic/aml_lcd.h>

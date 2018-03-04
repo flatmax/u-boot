@@ -10,7 +10,7 @@
 #include <errno.h>
 #include <environment.h>
 #include <fdt_support.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/arch/secure_apb.h>
 #include <asm/arch/eth_setup.h>
 #include <asm/arch-gxb/gpio.h>

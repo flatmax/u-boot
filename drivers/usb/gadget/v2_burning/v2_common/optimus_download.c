@@ -10,7 +10,7 @@
  *
  */
 #include "../v2_burning_i.h"
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <partition_table.h>
 #include <asm/arch/secure_apb.h>
 #include <asm/arch/bl31_apis.h>

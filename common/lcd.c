@@ -46,7 +46,7 @@
 #endif
 
 #if defined(CONFIG_LCD_DT_SIMPLEFB)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 
 /************************************************************************/
