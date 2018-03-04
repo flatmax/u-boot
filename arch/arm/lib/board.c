@@ -35,7 +35,7 @@
 #include <mmc.h>
 #include <scsi.h>
 #include <status_led.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdtdec.h>
 #include <post.h>
 #include <logbuff.h>

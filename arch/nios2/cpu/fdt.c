@@ -13,7 +13,7 @@
 #include <common.h>
 
 #if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 
 DECLARE_GLOBAL_DATA_PTR;

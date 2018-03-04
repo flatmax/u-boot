@@ -3,10 +3,10 @@
  * Copyright (C) 2006 David Gibson, IBM Corporation.
  * SPDX-License-Identifier:	GPL-2.0+ BSD-2-Clause
  */
-#include "libfdt_env.h"
+#include "linux/libfdt_env.h"
 
 #include <fdt.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 #include "libfdt_internal.h"
 

@@ -9,7 +9,7 @@
 #include <malloc.h>
 #include <sdhci.h>
 #include <fdtdec.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/gpio.h>
 #include <asm/arch/mmc.h>
 #include <asm/arch/clk.h>

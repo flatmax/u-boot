@@ -1319,7 +1319,7 @@ void board_recovery_setup(void)
 
 #ifdef CONFIG_SPL_BUILD
 #include <spl.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 
 const struct mx6dq_iomux_ddr_regs mx6_ddr_ioregs = {
 	.dram_sdclk_0 =  0x00020030,

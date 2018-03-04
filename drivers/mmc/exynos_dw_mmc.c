@@ -8,7 +8,7 @@
 #include <common.h>
 #include <dwmmc.h>
 #include <fdtdec.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <malloc.h>
 #include <asm/arch/dwmmc.h>
 #include <asm/arch/clk.h>

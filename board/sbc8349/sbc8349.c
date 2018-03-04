@@ -16,7 +16,7 @@
 #include <spd_sdram.h>
 #include <miiphy.h>
 #if defined(CONFIG_OF_LIBFDT)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 
 int fixed_sdram(void);

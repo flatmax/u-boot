@@ -7,7 +7,7 @@
 
 
 #include <common.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 #include <spd_sdram.h>
 #include <asm/ppc4xx-emac.h>

@@ -11,7 +11,7 @@
 
 #include <common.h>
 #include <linux/compiler.h>
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <asm/arch/tables.h>
 
 /* Allow a maximum of 16 memory range definitions. */

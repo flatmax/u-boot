@@ -13,7 +13,7 @@
 #endif
 
 #if defined(CONFIG_OF_BOARD_SETUP) && defined(CONFIG_OF_LIBFDT)
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #endif
 
 extern flash_info_t flash_info[];	/* FLASH chips info */

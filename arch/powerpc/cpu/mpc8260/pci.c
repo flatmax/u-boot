@@ -18,7 +18,7 @@
 #include <asm/m8260_pci.h>
 #include <asm/io.h>
 #ifdef CONFIG_OF_LIBFDT
-#include <libfdt.h>
+#include <linux/libfdt.h>
 #include <fdt_support.h>
 #endif
 
