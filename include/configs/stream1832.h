@@ -107,7 +107,7 @@
         "wipe_data=successful\0"\
         "wipe_cache=successful\0"\
         "EnableSelinux=enforcing\0" \
-        "recovery_part=recovery\0"\
+        "recovery_part=swufit\0"\
         "recovery_offset=0\0"\
         "initargs="\
             "rootfstype=ramfs init=/init console=ttyS0,115200 no_console_suspend earlycon=aml_uart,0xff803000 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 "\

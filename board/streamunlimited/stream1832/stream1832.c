@@ -398,25 +398,26 @@ static struct mtd_partition normal_partition_info[] = {
     },
 #endif
     {
-        .name = "logo",
+        .name = "swuenv",
         .offset = 0,
-        .size = 2*SZ_1M,
+        .size = 512*SZ_1K,
     },
     {
-        .name = "recovery",
+        .name = "swufit",
         .offset = 0,
-        .size = 16*SZ_1M,
+        .size = 32*SZ_1M,
     },
     {
-        .name = "boot",
+        .name = "fit",
         .offset = 0,
-        .size = 15*SZ_1M,
+        .size = 12*SZ_1M,
     },
     {
-        .name = "system",
+        .name = "constants",
         .offset = 0,
-        .size = 280*SZ_1M,
+        .size = 512*SZ_1K,
     },
+
 	/* last partition get the rest capacity */
     {
         .name = "data",
