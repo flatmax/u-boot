@@ -55,6 +55,7 @@
 #include <asm/saradc.h>
 
 #include "adc_codes.h"
+#include <fwupdate.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -543,6 +544,10 @@ int board_late_init(void){
 #ifdef CONFIG_AML_V2_FACTORY_BURN
 	/*aml_try_factory_sdcard_burning(0, gd->bd);*/
 #endif// #ifdef CONFIG_AML_V2_FACTORY_BURN
+
+	if (fwupdate_init() < 0) {
+		printf("ERROR: fwupdate_init() call failed!\n");
+	}
 
 	return 0;
 }

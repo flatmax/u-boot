@@ -24,6 +24,7 @@
 
 #include <asm/arch/cpu.h>
 
+#include "sue_fwupdate_common.h"
 
 #define CONFIG_SYS_GENERIC_BOARD  1
 #ifndef CONFIG_AML_MESON
@@ -222,6 +223,7 @@
 			"run update;\n" \
 			"fi;fi;" \
 		"fi;\0" \
+	SUE_FWUPDATE_EXTRA_ENV_SETTINGS
 
 
 #define CONFIG_PREBOOT  \
@@ -229,11 +231,14 @@
             "run upgrade_check;"\
             "run storeargs;"\
             "run switch_bootmode;"
-#define CONFIG_BOOTCOMMAND "run storeboot"
+#define CONFIG_BOOTCOMMAND              SUE_FWUPDATE_BOOTCOMMAND
+#define CONFIG_ALTBOOTCOMMAND           SUE_FWUPDATE_ALTBOOTCOMMAND
+
 
 //#define CONFIG_ENV_IS_NOWHERE  1
 #define CONFIG_ENV_SIZE   (64*1024)
 #define CONFIG_FIT 1
+#define CONFIG_BOOTCOUNT_LIMIT
 #define CONFIG_OF_LIBFDT 1
 #define CONFIG_ANDROID_BOOT_IMAGE 1
 #define CONFIG_ANDROID_IMG 1
@@ -468,6 +473,7 @@
 #define CONFIG_CMD_JTAG	1
 #define CONFIG_CMD_AUTOSCRIPT 1
 #define CONFIG_CMD_MISC 1
+#define CONFIG_CMD_ENV_EXISTS 1
 
 /*file system*/
 #define CONFIG_DOS_PARTITION 1
