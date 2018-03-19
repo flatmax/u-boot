@@ -476,6 +476,14 @@ int board_axp152_init(void)
 
 int board_init(void)
 {
+#ifdef CONFIG_SYS_I2C_AML
+	board_i2c_init();
+#endif
+
+#ifdef CONFIG_AXP152_POWER
+	board_axp152_init();
+#endif
+
 #ifdef CONFIG_AML_V2_FACTORY_BURN
 	aml_try_factory_usb_burning(0, gd->bd);
 #endif// #ifdef CONFIG_AML_V2_FACTORY_BURN
@@ -487,14 +495,6 @@ int board_init(void)
 #ifdef CONFIG_AML_NAND
 	extern int amlnf_init(unsigned char flag);
 	amlnf_init(0);
-#endif
-
-#ifdef CONFIG_SYS_I2C_AML
-	board_i2c_init();
-#endif
-
-#ifdef CONFIG_AXP152_POWER
-	board_axp152_init();
 #endif
 
 	if (get_cpu_id().package_id == MESON_CPU_PACKAGE_ID_A113X)
