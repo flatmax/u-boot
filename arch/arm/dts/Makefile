@@ -48,6 +48,7 @@ dtb-$(CONFIG_ZYNQ) += zynq-zc702.dtb \
 	zynq-zc770-xm012.dtb \
 	zynq-zc770-xm013.dtb
 dtb-$(CONFIG_AM33XX) += am335x-boneblack.dtb
+dtb-$(CONFIG_SUE_S1832) += s1832.dtb
 
 dtb-$(CONFIG_SOCFPGA) += socfpga_cyclone5_socrates.dtb
 

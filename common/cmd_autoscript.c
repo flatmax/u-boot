@@ -49,7 +49,9 @@ int
 autoscript (ulong addr, const char *fit_uname)
 {
 	ulong		len;
+#if defined (CONFIG_IMAGE_FORMAT_LEGACY)
 	image_header_t	*hdr;
+#endif
 	ulong		*data;
 	char		*cmd;
 	int		rcode = 0;
@@ -64,6 +66,7 @@ autoscript (ulong addr, const char *fit_uname)
 	verify = getenv_yesno ("verify");
 
 	switch (genimg_get_format ((void *)addr)) {
+#if defined (CONFIG_IMAGE_FORMAT_LEGACY)
 	case IMAGE_FORMAT_LEGACY:
 		hdr = (image_header_t *)addr;
 
@@ -99,6 +102,7 @@ autoscript (ulong addr, const char *fit_uname)
 		}
 
 		break;
+#endif
 #if defined(CONFIG_FIT)
 	case IMAGE_FORMAT_FIT:
 		if (fit_uname == NULL) {
