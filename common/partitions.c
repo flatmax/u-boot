@@ -58,7 +58,7 @@ int check_valid_dts(unsigned char *buffer)
 	int ret = -__LINE__;
 	char *dt_addr;
 	/* fixme, a work around way */
-	unsigned char *sbuffer = (unsigned char *)getenv_hex("loadaddr", CONFIG_DTB_MEM_ADDR + 0x100000);
+	/* unsigned char *sbuffer = (unsigned char *)getenv_hex("loadaddr", CONFIG_DTB_MEM_ADDR + 0x100000);
 
 	if (is_dtb_encrypt(buffer)) {
 		memcpy(sbuffer, buffer, AML_DTB_IMG_MAX_SZ);
@@ -69,7 +69,7 @@ int check_valid_dts(unsigned char *buffer)
 			return -__LINE__;
 		}
 		memcpy(buffer, sbuffer, AML_DTB_IMG_MAX_SZ);
-	}
+	}*/
 #ifdef CONFIG_MULTI_DTB
 	dt_addr = (char *)get_multi_dt_entry((unsigned long)buffer);
 #else

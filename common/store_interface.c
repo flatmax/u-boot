@@ -310,7 +310,7 @@ static int do_store_dtb_ops(cmd_tbl_t * cmdtp, int flag, int argc, char * const 
         unsigned long dtImgAddr = simple_strtoul(dtbLoadaddr, NULL, 16);
         //
         //ONLY need decrypting when 'store dtb read'
-       if (!strcmp("read", argv[2]))
+       /*if (!strcmp("read", argv[2]))
        {
            flush_cache(dtImgAddr, AML_DTB_IMG_MAX_SZ);
            ret = aml_sec_boot_check(AML_D_P_IMG_DECRYPT, dtImgAddr, AML_DTB_IMG_MAX_SZ, 0);
@@ -318,7 +318,7 @@ static int do_store_dtb_ops(cmd_tbl_t * cmdtp, int flag, int argc, char * const 
                MsgP("decrypt dtb: Sig Check %d\n",ret);
                return ret;
            }
-       }
+       }*/
 #ifdef CONFIG_MULTI_DTB
         if (!is_write && strcmp("iread", argv[2]))
         {

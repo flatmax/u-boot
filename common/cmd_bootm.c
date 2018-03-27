@@ -130,7 +130,7 @@ int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			return do_bootm_subcommand(cmdtp, flag, argc, argv);
 	}
 
-	unsigned int nLoadAddr = GXB_IMG_LOAD_ADDR; //default load address
+	/*unsigned int nLoadAddr = GXB_IMG_LOAD_ADDR; //default load address
 
 	if (argc > 0)
 	{
@@ -144,10 +144,10 @@ int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	{
 		printf("\naml log : Sig Check %d\n",nRet);
 		return nRet;
-	}
+	}*/
 
 	ee_gate_off();
-	nRet = do_bootm_states(cmdtp, flag, argc, argv, BOOTM_STATE_START |
+	int nRet = do_bootm_states(cmdtp, flag, argc, argv, BOOTM_STATE_START |
 		BOOTM_STATE_FINDOS | BOOTM_STATE_FINDOTHER |
 		BOOTM_STATE_LOADOS |
 #if defined(CONFIG_PPC) || defined(CONFIG_MIPS)
