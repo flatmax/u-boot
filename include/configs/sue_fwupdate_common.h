@@ -60,13 +60,12 @@
 \
     "kernel_common_args=const toenv eth_int_addr; " \
         "setenv bootargs console=ttyS0,115200 panic=1; " \
-        /*"fec.macaddr=${eth_int_addr} ${mtdparts} ${optargs}; " \
+        /*"fec.macaddr=${eth_int_addr} ${mtdparts} ${optargs}; " */ \
         "if test ${secure_board} = 1; " \
             "then " \
             "echo \"INFO: board is locked, booting to runlevel 3\"; " \
             "setenv bootargs ${bootargs} 3; " \
-        "fi; " */ \
-        "\0" \
+        "fi;\0" \
 \
     "nandroot=ubi0:nsdk-rootfs rw\0" \
     "nandrootfstype=ubifs\0" \
@@ -85,19 +84,18 @@
 \
     "swunandargs=run kernel_common_args; " \
         "setenv bootargs ${bootargs} rootfstype=ramfs " \
-        /* "factory_state=${factory_state} usb_update_req=${usb_update_req} " \
-        "secure_board=${secure_board};" */ \
-        "\0" \
+        /* "factory_state=${factory_state} usb_update_req=${usb_update_req} " */ \
+        "secure_board=${secure_board};\0" \
     "swu_nand_boot=echo \"Booting swu from nand ...\"; " \
         "run swunandargs; " \
         "echo \"INFO: loading swu fit image into RAM...\"; " \
         /*"bstate dontunplug; "*/ \
         "run readswufituImage; " \
-        /*"if test ${secure_board} = 0; " \
+        "if test ${secure_board} = 0; " \
             "then " \
             "echo \"INFO: board is not locked, do not enforce swufit signature\"; " \
             "setenv verify no; " \
-        "fi; " */ \
+        "fi; " \
         "echo \"INFO: booting swu fit image...\"; " \
         "run bootfitimage;\0" \
 \

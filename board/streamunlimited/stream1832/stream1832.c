@@ -503,6 +503,7 @@ int board_init(void)
 }
 
 #ifdef CONFIG_BOARD_LATE_INIT
+extern int is_dtb_encrypt(unsigned char *buffer);
 int board_late_init(void){
 	//update env before anyone using it
 	run_command("get_rebootmode; echo reboot_mode=${reboot_mode}; "\
@@ -525,6 +526,11 @@ int board_late_init(void){
 		}
 		#endif
 	}
+
+	// pass board 'secure' state (ie, locked secure fuses/..) to env
+	const char *secure = is_dtb_encrypt(NULL) ? "1" : "0";
+	printf("Setting secure_board: %s\n", secure);
+	setenv("secure_board", secure);
 
 	/* load unifykey */
 	//run_command("keyunify init 0x1234", 0);
