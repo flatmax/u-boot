@@ -26,6 +26,10 @@
  */
 
 #define SUE_FWUPDATE_EXTRA_ENV_SETTINGS \
+    "factory_state=0\0" \
+    "usb_update_req=0\0" \
+\
+\
     "readfituImage=" \
         "if nand read ${loadaddr} fit; " \
             "then " \
@@ -84,7 +88,7 @@
 \
     "swunandargs=run kernel_common_args; " \
         "setenv bootargs ${bootargs} rootfstype=ramfs " \
-        /* "factory_state=${factory_state} usb_update_req=${usb_update_req} " */ \
+        "factory_state=${factory_state} usb_update_req=${usb_update_req} " \
         "secure_board=${secure_board};\0" \
     "swu_nand_boot=echo \"Booting swu from nand ...\"; " \
         "run swunandargs; " \
@@ -99,6 +103,42 @@
         "echo \"INFO: booting swu fit image...\"; " \
         "run bootfitimage;\0" \
 \
+\
+    "check_factory_state=" \
+       "echo \"INFO: Checking if fit and swuenv partitions are empty.\"; " \
+       "setenv target_addr ${loadaddr}; " \
+       "setenv factory_state 1; " \
+       "mw ${loadaddr} 0xffffffff; " \
+       "setexpr target_addr ${target_addr} + 4; " \
+       "setexpr target_addr ${target_addr} + 4; " \
+       "for part in fit swuenv; " \
+           "do; " \
+           "nand read ${target_addr} $part 4; " \
+           "cmp.l ${loadaddr} ${target_addr} 1; " \
+               "if test $? -eq 1; " \
+                   "then; " \
+                   "setenv factory_state 0; " \
+                   "echo \"INFO: partition $part is not empty.\"; " \
+               "fi; " \
+       "done; " \
+       "if test ${factory_state} -eq 0; " \
+           "then " \
+           "echo \"INFO: Board is NOT in factory state.\"; " \
+       "else " \
+           "echo \"INFO: Board is in factory state.\"; " \
+       "fi;\0" \
+\
+\
+    "check_usb_update_request=" \
+        "if fwup usb_update_req; then " \
+            "echo \"INFO: USB update request is active\"; " \
+            "setenv usb_update_req 1; " \
+        "else " \
+            "echo \"INFO: USB update request is NOT active\"; " \
+            "setenv usb_update_req 0; " \
+        "fi;\0" \
+\
+\
     "swu_boot=" \
         "if fwup fail; " \
             "then " \
@@ -111,6 +151,23 @@
             "fi; " \
         "fi; " \
         "boot_swupdate=no; " \
+        "if test ${bootcount} -eq 1; " \
+            "then " \
+            "echo \"INFO: Bootcount = 1, checking if board is in factory state or USB update request is active\"; " \
+            "run check_factory_state; " \
+            "if test ${factory_state} = 1; " \
+                "then " \
+                "boot_swupdate=yes; " \
+            "else " \
+                "run check_usb_update_request; " \
+                "if test ${usb_update_req} = 1; " \
+                    "then " \
+                    "boot_swupdate=yes; " \
+                "fi; " \
+            "fi; " \
+        "else " \
+            "echo \"INFO: Bootcount != 1, not checking factory state or USB update request\"; " \
+        "fi; " \
         "if fwup fail; " \
             "then " \
             "min_boot_retry=3;" \
