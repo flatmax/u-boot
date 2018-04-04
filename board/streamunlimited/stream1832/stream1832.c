@@ -52,10 +52,12 @@
 #ifdef CONFIG_AXP152_POWER
 #include <axp152.h>
 #endif
-#include <asm/saradc.h>
 
-#include "adc_codes.h"
-#include <fwupdate.h>
+#include "../common/fwupdate.h"
+#include "../common/device_interface.h"
+#include "../common/flags_a113d.h"
+
+static struct sue_device_info __attribute__((section (".data"))) current_device;
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -345,6 +347,7 @@ static void board_i2c_init(void)
 #if defined(CONFIG_BOARD_EARLY_INIT_F)
 int board_early_init_f(void){
 	/*add board early init function here*/
+	sue_device_detect(&current_device);
 	return 0;
 }
 #endif
@@ -474,6 +477,34 @@ int board_axp152_init(void)
 }
 #endif
 
+/*
+ * This function prints the reset cause an does some thing like
+ * clearing all flags if the reset cause was POR.
+ */
+static int handle_reset_cause(enum sue_reset_cause reset_cause)
+{
+	printf("Reset cause: ");
+	switch(current_device.reset_cause) {
+		case SUE_RESET_CAUSE_POR:
+			flags_clear();
+			bootcnt_write(0);
+			printf("POR\n");
+			break;
+		case SUE_RESET_CAUSE_SOFTWARE:
+			printf("SOFTWARE\n");
+			break;
+		case SUE_RESET_CAUSE_WDOG:
+			printf("WDOG\n");
+			break;
+		default:
+			printf("unknown\n");
+			return -EINVAL;
+			break;
+	};
+
+	return 0;
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_SYS_I2C_AML
@@ -497,8 +528,17 @@ int board_init(void)
 	amlnf_init(0);
 #endif
 
+	//TODO get the real reset cause
+	// current_device.reset_cause = get_reset_cause();
+	current_device.reset_cause = SUE_RESET_CAUSE_SOFTWARE;
+	handle_reset_cause(current_device.reset_cause);
+
 	if (get_cpu_id().package_id == MESON_CPU_PACKAGE_ID_A113X)
 		power_save_pre();
+
+	sue_carrier_ops_init(&current_device);
+	sue_carrier_init(&current_device);
+
 	return 0;
 }
 
@@ -527,11 +567,6 @@ int board_late_init(void){
 		#endif
 	}
 
-	// pass board 'secure' state (ie, locked secure fuses/..) to env
-	const char *secure = is_dtb_encrypt(NULL) ? "1" : "0";
-	printf("Setting secure_board: %s\n", secure);
-	setenv("secure_board", secure);
-
 	/* load unifykey */
 	//run_command("keyunify init 0x1234", 0);
 
@@ -551,9 +586,29 @@ int board_late_init(void){
 	/*aml_try_factory_sdcard_burning(0, gd->bd);*/
 #endif// #ifdef CONFIG_AML_V2_FACTORY_BURN
 
-	if (fwupdate_init() < 0) {
+	char buffer[64];
+
+	if (fwupdate_init(&current_device) < 0) {
 		printf("ERROR: fwupdate_init() call failed!\n");
 	}
+
+	if (current_device.carrier_flags & SUE_CARRIER_FLAGS_HAS_DAUGHTER) {
+		snprintf(buffer, sizeof(buffer), "%s_%s_%s",
+				sue_device_get_canonical_module_name(&current_device),
+				sue_device_get_canonical_carrier_name(&current_device),
+				sue_device_get_canonical_daughter_name(&current_device));
+	} else {
+		snprintf(buffer, sizeof(buffer), "%s_%s", sue_device_get_canonical_module_name(&current_device), sue_device_get_canonical_carrier_name(&current_device));
+	}
+	printf("Setting fit_config: %s\n", buffer);
+	setenv("fit_config", buffer);
+
+	// pass board 'secure' state (ie, locked secure fuses/..) to env
+	const char *secure = is_dtb_encrypt(NULL) ? "1" : "0";
+	printf("Setting secure_board: %s\n", secure);
+	setenv("secure_board", secure);
+
+	sue_carrier_late_init(&current_device);
 
 	return 0;
 }
@@ -589,31 +644,10 @@ phys_size_t get_effective_memsize(void)
 #endif
 }
 
-unsigned int get_board_id()
-{
-	int ch0, ch1;
-	int code_ch0, code_ch1;
-
-	saradc_enable();
-	ch0 = get_adc_sample_gxbb_12bit(0);
-	mdelay(1);
-	ch1 = get_adc_sample_gxbb_12bit(1);
-	saradc_disable();
-
-	code_ch0 = get_adc_code(ch0);
-	code_ch1 = get_adc_code(ch1);
-
-	printf("ADC values: ADC_CH0: 0x%03X, ADC_CH1: 0x%03X\n", ch0, ch1);
-	printf("ADC codes : ADC_CH0: 0x%03X, ADC_CH1: 0x%03X\n", code_ch0, code_ch1);
-
-	return 0;
-}
-
 #ifdef CONFIG_MULTI_DTB
 int checkhw(char * name)
 {
 	unsigned int ddr_size = 0;
-	unsigned int b_id = 0;
 	char loc_name[64] = {0};
 	int i;
 
@@ -626,38 +660,7 @@ int checkhw(char * name)
 #endif
 	printf("debug ddr size: 0x%x\n", ddr_size);
 
-	b_id = get_board_id();
-
-	printf("%s board adc:%d\n", __func__, b_id);
-
-#if 0
-	switch (b_id) {
-	case 0:
-	case 1:
-	case 2:
-		strcpy(loc_name, "axg_s420_512m\0");
-		break;
-	case 3:
-		strcpy(loc_name, "axg_s420_v03\0");
-		break;
-	default:
-		//printf("DDR size: 0x%x, multi-dt doesn't support\n", ddr_size);
-		strcpy(loc_name, "axg_s420_v03");
-		break;
-	}
-
-	switch (ddr_size) {
-		case 0x8000000:
-			strcpy(loc_name, "axg_s420_128m\0");
-			break;
-		default:
-			printf("dts ,it's up to board id\n");
-			break;
-	}
-
-	if (name != NULL)
-		strcpy(name, loc_name);
-#endif
+	sue_print_device_info(&current_device);
 
 	printf("[MPI] HACK! selecting axg_sue_s1832 device-tree\n");
 	strcpy(name, "axg_sue_s1832");

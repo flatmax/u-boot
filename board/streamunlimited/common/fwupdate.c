@@ -21,7 +21,9 @@
 #include "fwupdate.h"
 #include "flags_a113d.h"
 
-#define FWUP_MAX_BOOT_CNT	6UL
+#define FWUP_MAX_BOOT_CNT	9UL
+
+static const struct sue_device_info *current_device;
 
 static int fwupdate_getUpdateFlag(uint8_t *pUpdateFlag)
 {
@@ -55,8 +57,15 @@ static int fwupdate_setBootCount(uint8_t bootCnt)
 
 static int fwupdate_getUsbUpdateReq(void)
 {
-	// not used on citation
-	return 0;
+	int ret;
+	ret = sue_carrier_get_usb_update_request(current_device);
+
+	if (ret < 0) {
+		printf("ERROR: fwupdate_getUsbUpdateReq() failed!\n");
+		return 0;
+	}
+
+	return ret;
 }
 
 #ifdef CONFIG_BOOTCOUNT_LIMIT
@@ -83,7 +92,7 @@ ulong bootcount_load(void)
 }
 #endif /* CONFIG_BOOTCOUNT_LIMIT */
 
-int fwupdate_init()
+int fwupdate_init(const struct sue_device_info *device_info)
 {
 	int status = 0;
 	char* bootlimit;
@@ -94,6 +103,8 @@ int fwupdate_init()
 		sprintf(buf, "%lu", FWUP_MAX_BOOT_CNT);
 		setenv("bootlimit", buf);
 	}
+
+	current_device = device_info;
 
 	return status;
 }
