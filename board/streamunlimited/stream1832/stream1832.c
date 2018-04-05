@@ -648,7 +648,6 @@ phys_size_t get_effective_memsize(void)
 int checkhw(char * name)
 {
 	unsigned int ddr_size = 0;
-	char loc_name[64] = {0};
 	int i;
 
 	for (i=0; i<CONFIG_NR_DRAM_BANKS; i++) {
@@ -662,10 +661,7 @@ int checkhw(char * name)
 
 	sue_print_device_info(&current_device);
 
-	printf("[MPI] HACK! selecting axg_sue_s1832 device-tree\n");
-	strcpy(name, "axg_sue_s1832");
-	strcpy(loc_name, "axg_sue_s1832");
-	setenv("aml_dt", loc_name);
+	strcpy(name, "axg");
 
 	return 0;
 }
