@@ -53,6 +53,8 @@
 #include <axp152.h>
 #endif
 
+#include <asm/reboot.h>
+
 #include "../common/fwupdate.h"
 #include "../common/device_interface.h"
 #include "../common/flags_a113d.h"
@@ -505,6 +507,34 @@ static int handle_reset_cause(enum sue_reset_cause reset_cause)
 	return 0;
 }
 
+static int reset_cause(void)
+{
+	uint32_t reboot_mode_val;
+	reboot_mode_val = ((readl(AO_SEC_SD_CFG15) >> 12) & 0xf);
+
+	switch (reboot_mode_val)
+	{
+		case AMLOGIC_COLD_BOOT:
+			return SUE_RESET_CAUSE_POR;
+		case AMLOGIC_NORMAL_BOOT:
+		case AMLOGIC_FACTORY_RESET_REBOOT:
+		case AMLOGIC_UPDATE_REBOOT:
+		case AMLOGIC_FASTBOOT_REBOOT:
+		case AMLOGIC_BOOTLOADER_REBOOT:
+		case AMLOGIC_SUSPEND_REBOOT:
+		case AMLOGIC_HIBERNATE_REBOOT:
+		case AMLOGIC_SHUTDOWN_REBOOT:
+		case AMLOGIC_CRASH_REBOOT:
+		case AMLOGIC_KERNEL_PANIC:
+		case AMLOGIC_RPMBP_REBOOT:
+			return SUE_RESET_CAUSE_SOFTWARE;
+		case AMLOGIC_WATCHDOG_REBOOT:
+			return SUE_RESET_CAUSE_WDOG;
+		default:
+			return SUE_RESET_CAUSE_UNKNOWN;
+	}
+}
+
 int board_init(void)
 {
 #ifdef CONFIG_SYS_I2C_AML
@@ -528,9 +558,7 @@ int board_init(void)
 	amlnf_init(0);
 #endif
 
-	//TODO get the real reset cause
-	// current_device.reset_cause = get_reset_cause();
-	current_device.reset_cause = SUE_RESET_CAUSE_SOFTWARE;
+	current_device.reset_cause = reset_cause();
 	handle_reset_cause(current_device.reset_cause);
 
 	if (get_cpu_id().package_id == MESON_CPU_PACKAGE_ID_A113X)
