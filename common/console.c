@@ -15,6 +15,8 @@
 #include <exports.h>
 #include <environment.h>
 
+extern int is_dtb_encrypt(unsigned char *buffer);
+
 DECLARE_GLOBAL_DATA_PTR;
 
 static int on_console(const char *name, const char *value, enum env_op op,
@@ -874,6 +876,13 @@ int console_init_r(void)
 		/* need to set a console if not done above. */
 		console_doenv(stderr, errdev);
 	}
+
+	/* if board is locked, disable input device */
+	if (is_dtb_encrypt(NULL)) {
+		puts("Board is locked, disabling input device\n");
+		inputdev = search_device(DEV_FLAGS_INPUT, "nulldev");
+	}
+
 	if (inputdev != NULL) {
 		/* need to set a console if not done above. */
 		console_doenv(stdin, inputdev);
@@ -950,6 +959,12 @@ int console_init_r(void)
 		console_devices[stdout][0] = outputdev;
 		console_devices[stderr][0] = outputdev;
 #endif
+	}
+
+	/* if board is locked, disable input device */
+	if (is_dtb_encrypt(NULL)) {
+		puts("Board is locked, disabling input device\n");
+		inputdev = search_device(DEV_FLAGS_INPUT, "nulldev");
 	}
 
 	/* Initializes input console */
