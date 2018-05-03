@@ -348,8 +348,6 @@ static void board_i2c_init(void)
 
 #if defined(CONFIG_BOARD_EARLY_INIT_F)
 int board_early_init_f(void){
-	/*add board early init function here*/
-	sue_device_detect(&current_device);
 	return 0;
 }
 #endif
@@ -556,6 +554,8 @@ int board_init(void)
 #ifdef CONFIG_AXP152_POWER
 	board_axp152_init();
 #endif
+
+	sue_device_detect(&current_device);
 
 #ifdef CONFIG_AML_V2_FACTORY_BURN
 	aml_try_factory_usb_burning(0, gd->bd);
