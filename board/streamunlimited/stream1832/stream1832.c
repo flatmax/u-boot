@@ -453,7 +453,12 @@ int board_axp152_init(void)
 {
 	int ret = 0;
 
-	ret = axp152_init(0x30);
+	/* first try to find the AXP at addr 0x32 */
+	ret = axp152_init(0x32);
+	if (ret) {
+		/* if this fails we try to use 0x30, which was a hardware bug on older modules */
+		ret = axp152_init(0x30);
+	}
 
 	/* Set VDDQ to 1.35V */
 	ret |= axp152_set_dcdc3(1350);

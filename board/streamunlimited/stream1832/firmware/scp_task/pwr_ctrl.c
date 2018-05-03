@@ -125,7 +125,7 @@ static void power_off_at_24M(unsigned int suspend_from)
 {
 	int reg;
 
-	old_output_ctrl = i2c_read(0x30, 0x12);
+	old_output_ctrl = i2c_read(0x32, 0x12);
 	reg = old_output_ctrl;
 
 #if 0
@@ -140,7 +140,7 @@ static void power_off_at_24M(unsigned int suspend_from)
 	/* disable ALDO1 (VDDIO_3V3) */
 	reg &= ~(1 << 3);
 
-	i2c_write(0x30, 0x12, reg);
+	i2c_write(0x32, 0x12, reg);
 
 	uart_puts("output_ctrl: old: 0x");
 	uart_put_hex(old_output_ctrl, 8);
@@ -157,11 +157,11 @@ static void power_off_at_24M(unsigned int suspend_from)
 #endif
 
 	/* backup old VDD_EE setting */
-	old_vddee_setting = i2c_read(0x30, 0x2B);
+	old_vddee_setting = i2c_read(0x32, 0x2B);
 
 	/* set VDD_EE to 825mV */
 	reg = AXP152_VDD_825MV;
-	i2c_write(0x30, 0x2B, reg);
+	i2c_write(0x32, 0x2B, reg);
 
 	uart_puts("vdd_ee: old: 0x");
 	uart_put_hex(old_vddee_setting, 8);
@@ -178,12 +178,12 @@ static void power_on_at_24M(unsigned int suspend_from)
 	uart_puts("restoring vddee to: 0x");
 	uart_put_hex(old_vddee_setting, 8);
 	uart_puts("\n");
-	i2c_write(0x30, 0x2B, old_vddee_setting);
+	i2c_write(0x32, 0x2B, old_vddee_setting);
 
 	uart_puts("restoring output_ctrl to: 0x");
 	uart_put_hex(old_output_ctrl, 8);
 	uart_puts("\n");
-	i2c_write(0x30, 0x12, old_output_ctrl);
+	i2c_write(0x32, 0x12, old_output_ctrl);
 
 	_udelay(1000);
 }
