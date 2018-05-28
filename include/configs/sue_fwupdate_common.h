@@ -105,13 +105,13 @@
 \
 \
     "check_factory_state=" \
-       "echo \"INFO: Checking if fit and swuenv partitions are empty.\"; " \
+       "echo \"INFO: Checking if fit and environment partitions are empty.\"; " \
        "setenv target_addr ${loadaddr}; " \
        "setenv factory_state 1; " \
        "mw ${loadaddr} 0xffffffff; " \
        "setexpr target_addr ${target_addr} + 4; " \
        "setexpr target_addr ${target_addr} + 4; " \
-       "for part in fit swuenv; " \
+       "for part in fit environment; " \
            "do; " \
            "nand read ${target_addr} $part 4; " \
            "cmp.l ${loadaddr} ${target_addr} 1; " \

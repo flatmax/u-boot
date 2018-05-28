@@ -404,7 +404,7 @@ static struct mtd_partition normal_partition_info[] = {
     },
 #endif
     {
-        .name = "swuenv",
+        .name = "environment",
         .offset = 0,
         .size = 512*SZ_1K,
     },
