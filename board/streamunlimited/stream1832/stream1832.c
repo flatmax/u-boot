@@ -409,6 +409,11 @@ static struct mtd_partition normal_partition_info[] = {
         .size = 512*SZ_1K,
     },
     {
+        .name = "constants",
+        .offset = 0,
+        .size = 512*SZ_1K,
+    },
+    {
         .name = "swufit",
         .offset = 0,
         .size = 32*SZ_1M,
@@ -417,11 +422,6 @@ static struct mtd_partition normal_partition_info[] = {
         .name = "fit",
         .offset = 0,
         .size = 12*SZ_1M,
-    },
-    {
-        .name = "constants",
-        .offset = 0,
-        .size = 512*SZ_1K,
     },
 
 	/* last partition get the rest capacity */
