@@ -723,7 +723,7 @@ endif
 ALL-y += u-boot.srec u-boot.bin System.map binary_size_check
 ALL-y += u-boot.hex
 ifeq ($(CONFIG_NEED_BL301), y)
-ALL-y += bl301.bin
+ALL-y += bl301.bin_POST
 endif
 ALL-y += fip.bin boot.bin
 ALL-$(CONFIG_ONENAND_U_BOOT) += u-boot-onenand.bin
@@ -900,7 +900,7 @@ endif
 
 .PHONY: fip.bin
 ifeq ($(CONFIG_NEED_BL301), y)
-fip.bin: tools prepare acs.bin bl301.bin
+fip.bin: tools prepare acs.bin bl301.bin_POST
 else
 fip.bin: tools prepare acs.bin
 endif
@@ -911,11 +911,18 @@ endif
 
 ifeq ($(CONFIG_NEED_BL301), y)
 $(buildtree)/scp_task/bl301.bin:
-	# $(Q)$(MAKE) -C $(srctree)/$(CPUDIR)/${SOC}/firmware/scp_task
+	$(Q)$(MAKE) -C $(srctree)/$(CPUDIR)/${SOC}/firmware/scp_task
 
+# the original "bl301.bin" target was renamed to "bl301.bin_POST", and the
+# dependency on "$(buildtree)/scp_task/bl301.bin" (the actual compile step) was
+# removed - instead a new target by the original "bl301.bin" name is now
+# available to compile the bl301.bin image
 .PHONY : bl301.bin
-bl301.bin: tools prepare acs.bin bl21.bin $(buildtree)/scp_task/bl301.bin
-	# $(Q)cp $(buildtree)/scp_task/bl301.bin $(FIP_FOLDER_SOC)/bl301.bin -f
+bl301.bin: $(buildtree)/scp_task/bl301.bin
+	$(Q)cp $(buildtree)/scp_task/bl301.bin $(FIP_FOLDER_SOC)/bl301.bin -f
+
+.PHONY : bl301.bin_POST
+bl301.bin_POST: tools prepare acs.bin bl21.bin
 	$(Q)$(FIP_FOLDER)/blx_fix.sh \
 		$(FIP_FOLDER_SOC)/bl30.bin \
 		$(FIP_FOLDER_SOC)/zero_tmp \
