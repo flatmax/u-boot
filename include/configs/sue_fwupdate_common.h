@@ -62,8 +62,7 @@
         "echo \"INFO: resetting...\"; " \
         "reset;\0" \
 \
-    "kernel_common_args=const toenv eth_int_addr; " \
-        "setenv bootargs console=ttyS0,115200 panic=1; " \
+    "kernel_common_args=setenv bootargs console=ttyS0,115200 panic=1; " \
         /*"fec.macaddr=${eth_int_addr} ${mtdparts} ${optargs}; " */ \
         "if test ${secure_board} = 1; " \
             "then " \
