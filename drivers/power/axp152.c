@@ -23,14 +23,16 @@ enum axp152_reg {
 
 #define AXP152_POWEROFF			(1 << 7)
 
+static u8 axp152_addr;
+
 static int axp152_write(enum axp152_reg reg, u8 val)
 {
-	return i2c_write(0x30, reg, 1, &val, 1);
+	return i2c_write(axp152_addr, reg, 1, &val, 1);
 }
 
 static int axp152_read(enum axp152_reg reg, u8 *val)
 {
-	return i2c_read(0x30, reg, 1, val, 1);
+	return i2c_read(axp152_addr, reg, 1, val, 1);
 }
 
 static u8 axp152_mvolt_to_target(int mvolt, int min, int max, int div)
@@ -149,10 +151,12 @@ int axp152_set_ldo2(int mvolt)
 	return axp152_write(AXP152_LDO2_VOLTAGE, target);
 }
 
-int axp152_init(void)
+int axp152_init(unsigned char i2c_addr)
 {
 	u8 ver;
 	int rc;
+
+	axp152_addr = i2c_addr;
 
 	rc = axp152_read(AXP152_CHIP_VERSION, &ver);
 	if (rc)

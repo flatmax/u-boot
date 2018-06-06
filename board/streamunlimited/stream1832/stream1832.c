@@ -453,7 +453,7 @@ int board_axp152_init(void)
 {
 	int ret = 0;
 
-	ret = axp152_init();
+	ret = axp152_init(0x30);
 
 	/* Set VDDQ to 1.35V */
 	ret |= axp152_set_dcdc3(1350);
