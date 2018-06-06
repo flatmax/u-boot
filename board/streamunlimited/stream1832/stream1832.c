@@ -475,7 +475,14 @@ int board_axp152_init(void)
 	/* Enable 3V3_OUT */
 	ret |= axp152_set_ldo0(AXP152_LDO0_3V3, AXP152_LDO0_CUR_1500MA);
 
-	/* Enable WIFI_VRF */
+	/*
+	 * Always cycle WIFI_VRF otherwise the chip might be in some inconsistent state
+	 *
+	 * After doing the measurements with the HW department, we have to wait for 50 ms
+	 * before the power rails are cleanly at 0.
+	 */
+	ret |= axp152_set_gpio2_low();
+	udelay(50000);
 	ret |= axp152_set_gpio2_ldo(3300);
 
 	printf("AXP152 init done: %d\n", ret);
