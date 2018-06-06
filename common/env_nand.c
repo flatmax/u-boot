@@ -24,6 +24,8 @@
 #include <search.h>
 #include <errno.h>
 
+extern int is_dtb_encrypt(unsigned char *buffer);
+
 #if defined(CONFIG_CMD_SAVEENV) && defined(CONFIG_CMD_NAND)
 #define CMD_SAVEENV
 #elif defined(CONFIG_ENV_OFFSET_REDUND)
@@ -72,6 +74,13 @@ int amlnand_env_int(void)
 int env_init(void)
 #endif
 {
+	// if board is locked, use default environment
+	if (is_dtb_encrypt(NULL)) {
+		gd->env_addr	= (ulong)&default_environment[0];
+		gd->env_valid	= 1;
+		return 0;
+	}
+
 #if defined(ENV_IS_EMBEDDED) || defined(CONFIG_NAND_ENV_DST)
 	int crc1_ok = 0, crc2_ok = 0;
 	env_t *tmp_env1;
@@ -245,6 +254,12 @@ int amlnand_saveenv(void)
 int saveenv(void)
 #endif
 {
+	// if board is locked, disable saving environment
+	if (is_dtb_encrypt(NULL)) {
+		puts("Board is locked, not saving environment\n");
+		return 0;
+	}
+
 	int	ret = 0;
 	ALLOC_CACHE_ALIGN_BUFFER(env_t, env_new, 1);
 	int	env_idx = 0;
@@ -377,6 +392,12 @@ void env_relocate_spec(void)
 #if defined(ENV_IS_EMBEDDED)
 	return;
 #else
+	// if board is locked, use default environment
+	if (is_dtb_encrypt(NULL)) {
+		set_default_env("Board is locked, using default environment\n");
+		return;
+	}
+
 	int read1_fail = 0, read2_fail = 0;
 	int crc1_ok = 0, crc2_ok = 0;
 	int ret = 0;
@@ -474,6 +495,12 @@ void amlnand_env_relocate_spec(void)
 void env_relocate_spec(void)
 #endif
 {
+	// if board is locked, use default environment
+	if (is_dtb_encrypt(NULL)) {
+		set_default_env("Board is locked, using default environment\n");
+		return;
+	}
+
 #if !defined(ENV_IS_EMBEDDED)
 	int ret;
 	const char *name = "environment";
