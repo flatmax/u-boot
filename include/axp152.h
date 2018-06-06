@@ -47,4 +47,5 @@ int axp152_set_aldo1(enum axp152_aldo_voltage aldo_val);
 int axp152_set_aldo2(enum axp152_aldo_voltage aldo_val);
 int axp152_set_gpio2_ldo(int mvolt);
 int axp152_disable_gpio2_ldo(void);
+int axp152_set_gpio2_low(void);
 int axp152_init(unsigned char i2c_addr);

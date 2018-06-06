@@ -60,6 +60,11 @@ int axp152_set_gpio2_ldo(int mvolt)
 	return axp152_write(AXP152_GPIO2_LDO, target & 0x0F);
 }
 
+int axp152_set_gpio2_low(void)
+{
+	return axp152_write(AXP152_GPIO2_CONTROL, 0x00);
+}
+
 int axp152_disable_gpio2_ldo(void)
 {
 	return axp152_write(AXP152_GPIO2_CONTROL, 0x07);
