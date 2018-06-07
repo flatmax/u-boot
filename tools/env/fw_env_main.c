@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
 	char *script_file = NULL;
 	int print_default_env = 0;
 	int c;
-	const char *lockname = "/var/lock/" CMD_PRINTENV ".lock";
+	const char *lockname = "/tmp/" CMD_PRINTENV ".lock";
 	int lockfd = -1;
 	int retval = EXIT_SUCCESS;
 	struct flock lock;
