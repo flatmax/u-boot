@@ -150,6 +150,7 @@ static const struct daughter_map_entry daughter_map[] = {
 	{ SUE_DAUGHTER_EMPTY,	0, 0x01 },
 	{ SUE_DAUGHTER_HE,	0, 0x11 },
 	{ SUE_DAUGHTER_VOICE,	0, 0x13 },
+	{ SUE_DAUGHTER_VOICE,	0, 0x14 },
 };
 
 static int get_adc_code(u16 adc_value)
