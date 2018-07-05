@@ -31,8 +31,7 @@ enum sue_reset_cause {
 struct sue_device_info {
 	enum sue_reset_cause reset_cause;
 
-	u16 module_msb_adc_value, module_lsb_adc_value;
-	int module_msb_code, module_lsb_code;
+	u16 module_code;
 	enum sue_module module;
 	u8 module_version;
 

@@ -1,6 +1,7 @@
 #include <common.h>
 #include <asm/errno.h>
 #include <asm/saradc.h>
+#include <asm/gpio.h>
 #include "device_interface.h"
 
 struct adc_map_entry {
@@ -66,12 +67,12 @@ static const char *canonical_module_names[] = {
 struct module_map_entry {
 	enum sue_module module;
 	u8 module_version;
-	u8 msb_code;
-	u8 lsb_code;
+	u16 module_code;
 };
 
 static const struct module_map_entry module_map[] = {
-	{ SUE_MODULE_S1832,			1, 0x01, 0x01 },
+	{ SUE_MODULE_S1832, 1, 0x0F }, // MSB is not deterministic on Stream1832 L1
+	{ SUE_MODULE_S1832, 1, 0x1F }, // MSB is not deterministic on Stream1832 L1
 };
 
 static const char *carrier_names[] = {
@@ -162,28 +163,15 @@ static int get_adc_code(u16 adc_value)
 	return -EINVAL;
 }
 
-static int fill_device_info(struct sue_device_info *device, u16 module_msb_adc_value, u16 module_lsb_adc_value,
+static int fill_device_info(struct sue_device_info *device, u16 module_code,
 			u16 carrier_msb_adc_value, u16 carrier_lsb_adc_value)
 {
 	int i;
-	int module_msb_code, module_lsb_code;
 	int carrier_msb_code, carrier_lsb_code;
 
 	/* NOTE: We fill these raw values just for debugging purposes */
-	device->module_msb_adc_value = module_msb_adc_value;
-	device->module_lsb_adc_value = module_lsb_adc_value;
 	device->carrier_msb_adc_value = carrier_msb_adc_value;
 	device->carrier_lsb_adc_value = carrier_lsb_adc_value;
-
-	module_msb_code = get_adc_code(module_msb_adc_value);
-	if (module_msb_code < 0)
-		return module_msb_code;
-	device->module_msb_code = module_msb_code;
-
-	module_lsb_code = get_adc_code(module_lsb_adc_value);
-	if (module_lsb_code < 0)
-		return module_lsb_code;
-	device->module_lsb_code = module_lsb_code;
 
 	carrier_msb_code = get_adc_code(carrier_msb_adc_value);
 	if (carrier_msb_code < 0)
@@ -195,9 +183,10 @@ static int fill_device_info(struct sue_device_info *device, u16 module_msb_adc_v
 		return carrier_lsb_code;
 	device->carrier_lsb_code = carrier_lsb_code;
 
+	device->module_code = module_code;
 
 	for (i = 0; i < ARRAY_SIZE(module_map); i++) {
-		if (module_map[i].msb_code == module_msb_code && module_map[i].lsb_code == module_lsb_code) {
+		if (module_map[i].module_code == module_code) {
 			device->module = module_map[i].module;
 			device->module_version = module_map[i].module_version;
 			break;
@@ -238,15 +227,37 @@ static int fill_device_info(struct sue_device_info *device, u16 module_msb_adc_v
 	return 0;
 }
 
+/*
+ * These GPIOs are used as the bits for a module code, the first entry
+ * represents LSB.
+ */
+static const unsigned int s183x_module_code_gpios[] = {
+	PIN_GPIOX_6,
+	PIN_GPIOX_7,
+	PIN_BOOT_14,
+	GPIOAO_8,
+	PIN_GPIOX_11,
+};
+
 int sue_device_detect(struct sue_device_info *device)
 {
-	int ret;
-	u16 module_msb_adc_value, module_lsb_adc_value;
+	int ret, i;
+	u16 module_code = 0;
 	u16 carrier_msb_adc_value, carrier_lsb_adc_value;
 
-	// there is only one 1832 module, set adc to 0
-	module_msb_adc_value = 0;
-	module_lsb_adc_value = 0;
+	/*
+	 * Read GPIOs to form module code
+	 */
+	for (i = 0; i < ARRAY_SIZE(s183x_module_code_gpios); i++) {
+		gpio_request(s183x_module_code_gpios[i], "module detect");
+		gpio_direction_input(s183x_module_code_gpios[i]);
+
+		if (gpio_get_value(s183x_module_code_gpios[i]))
+			module_code |= (1 << i);
+
+		gpio_free(s183x_module_code_gpios[i]);
+	}
+
 
 	saradc_enable();
 	carrier_msb_adc_value = get_adc_sample_gxbb_12bit(1);
@@ -254,17 +265,16 @@ int sue_device_detect(struct sue_device_info *device)
 	carrier_lsb_adc_value = get_adc_sample_gxbb_12bit(0);
 	saradc_disable();
 
-	ret = fill_device_info(device, module_msb_adc_value, module_lsb_adc_value, carrier_msb_adc_value, carrier_lsb_adc_value);
+	ret = fill_device_info(device, module_code, carrier_msb_adc_value, carrier_lsb_adc_value);
 
 	return ret;
 }
 
 int sue_print_device_info(const struct sue_device_info *device)
 {
-	printf("ADC values: Module: 0x%04x 0x%04x, Carrier board: 0x%04x 0x%04x\n",
-			device->module_msb_adc_value, device->module_lsb_adc_value, device->carrier_msb_adc_value, device->carrier_lsb_adc_value);
-	printf("Codes     : Module:   0x%02x   0x%02x, Carrier board:   0x%02x   0x%02x\n",
-			device->module_msb_code, device->module_lsb_code, device->carrier_msb_code, device->carrier_lsb_code);
+	printf("ADC values: Carrier board: 0x%04x 0x%04x\n", device->carrier_msb_adc_value, device->carrier_lsb_adc_value);
+	printf("Codes     : Module: 0x%02x, Carrier board: 0x%02x 0x%02x\n",
+			device->module_code, device->carrier_msb_code, device->carrier_lsb_code);
 
 	printf("Module    : %s (L%d)\n", module_names[device->module], device->module_version);
 	printf("Carrier   : %s (L%d)\n", carrier_names[device->carrier], device->carrier_version);
