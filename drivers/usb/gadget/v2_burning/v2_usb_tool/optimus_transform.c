@@ -489,6 +489,15 @@ int optimus_working (const char *cmd, char* buff)
         {
                 ret = _cpu_temp_in_valid_range(argc, argv, buff + 7);
         }
+	else if(!strcmp(optCmd, "save") || !strcmp(optCmd, "saveenv"))
+	{
+		printf("[info]: skippig %s, use saveenv_s if you know what you are doing\n", optCmd);
+		ret = 0;
+	}
+	else if(!strcmp(optCmd, "saveenv_s"))
+	{
+		ret = run_command("saveenv", 0);
+	}
         else
         {
                 int flag = 0;
