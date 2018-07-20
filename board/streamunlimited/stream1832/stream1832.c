@@ -585,12 +585,6 @@ int board_init(void)
 #ifdef CONFIG_BOARD_LATE_INIT
 extern int is_dtb_encrypt(unsigned char *buffer);
 int board_late_init(void){
-	//update env before anyone using it
-	run_command("get_rebootmode; echo reboot_mode=${reboot_mode}; "\
-			"if test ${reboot_mode} = factory_reset; then "\
-			"defenv_reserv aml_dt;setenv upgrade_step 2;save; fi;", 0);
-	run_command("if itest ${upgrade_step} == 1; then "\
-				"defenv_reserv; setenv upgrade_step 2; saveenv; fi;", 0);
 	/*add board late init function here*/
 	int ret;
 	ret = run_command("store dtb read $dtb_mem_addr", 1);
@@ -655,26 +649,6 @@ int board_late_init(void){
 	sue_carrier_late_init(&current_device);
 
 	return 0;
-}
-#endif
-
-#ifdef CONFIG_AML_TINY_USBTOOL
-int usb_get_update_result(void)
-{
-	unsigned long upgrade_step;
-	upgrade_step = simple_strtoul (getenv ("upgrade_step"), NULL, 16);
-	printf("upgrade_step = %d\n", (int)upgrade_step);
-	if (upgrade_step == 1)
-	{
-		run_command("defenv", 1);
-		run_command("setenv upgrade_step 2", 1);
-		run_command("saveenv", 1);
-		return 0;
-	}
-	else
-	{
-		return -1;
-	}
 }
 #endif
 
