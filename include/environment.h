@@ -222,8 +222,17 @@ void set_default_env(const char *s);
 /* [re]set individual variables to their value in the default environment */
 int set_default_vars(int nvars, char * const vars[]);
 
+/* Forcefully [re]set individual variables to their value in the default environment */
+int force_default_vars(int nvars, char * const vars[]);
+
 /* Import from binary representation into hash table */
 int env_import(const char *buf, int check);
+
+/*
+ * Check if CRC is valid and (if yes) import the environment with the H_NOCLEAR | H_FORCE flags.
+ * Note that "buf" may or may not be aligned.
+ */
+int env_merge(const char *buf, int check);
 
 /* Export from hash table into binary representation */
 int env_export(env_t *env_out);
