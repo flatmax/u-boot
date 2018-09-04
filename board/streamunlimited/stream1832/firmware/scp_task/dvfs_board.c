@@ -26,14 +26,22 @@
  * to 0 because the voltage scaling is done by the cpufreq-dt driver.
  */
 struct scpi_opp_entry cpu_dvfs_tbl[] = {
+	DVFS(  96000000, 0),
 	DVFS( 100000000, 0),
 	DVFS( 250000000, 0),
+	DVFS( 264000000, 0),
 	DVFS( 500000000, 0),
+	DVFS( 504000000, 0),
 	DVFS( 667000000, 0),
+	DVFS( 672000000, 0),
+	DVFS( 768000000, 0),
 	DVFS(1000000000, 0),
+	DVFS(1176000000, 0),
 	DVFS(1200000000, 0),
 	DVFS(1296000000, 0),
+	DVFS(1344000000, 0),
 	DVFS(1416000000, 0),
+	DVFS(1512000000, 0),
 };
 
 void set_dvfs(unsigned int domain, unsigned int index)
