@@ -458,6 +458,15 @@ int board_axp152_init(void)
 		ret = axp152_init(0x30);
 	}
 
+	/*
+	 * Set the DCDC workmode of all regulators to PWM, this improves the voltage ripple
+	 * and the response to sudden load changes.
+	 */
+	ret |= axp152_set_dcdc_workmode(AXP152_DCDC1, AXP152_DCDC_WORKMODE_PWM);
+	ret |= axp152_set_dcdc_workmode(AXP152_DCDC2, AXP152_DCDC_WORKMODE_PWM);
+	ret |= axp152_set_dcdc_workmode(AXP152_DCDC3, AXP152_DCDC_WORKMODE_PWM);
+	ret |= axp152_set_dcdc_workmode(AXP152_DCDC4, AXP152_DCDC_WORKMODE_PWM);
+
 	/* Set VDDQ to 1.35V */
 	ret |= axp152_set_dcdc3(1350);
 
