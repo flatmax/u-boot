@@ -17,6 +17,7 @@ enum axp152_reg {
 	AXP152_DCDC4_VOLTAGE = 0x2B,
 	AXP152_LDO2_VOLTAGE = 0x2A,
 	AXP152_SHUTDOWN = 0x32,
+	AXP152_DCDC_WORKMODE = 0x80,
 	AXP152_GPIO2_CONTROL = 0x92,
 	AXP152_GPIO2_LDO = 0x96,
 };
@@ -133,6 +134,24 @@ int axp152_set_dcdc4(int mvolt)
 	u8 target = axp152_mvolt_to_target(mvolt, 700, 3500, 25);
 
 	return axp152_write(AXP152_DCDC4_VOLTAGE, target);
+}
+
+int axp152_set_dcdc_workmode(enum axp152_dcdc_regulator id, int mode)
+{
+	u8 reg;
+	int ret;
+
+	if (id < AXP152_DCDC1 || id > AXP152_DCDC4)
+		return -EINVAL;
+
+	ret = axp152_read(AXP152_DCDC_WORKMODE, &reg);
+	if (ret)
+		return ret;
+
+	reg = reg & ~(1 << (AXP152_DCDC4 - id));
+	reg |= mode << (AXP152_DCDC4 - id);
+
+	return axp152_write(AXP152_DCDC_WORKMODE, reg);
 }
 
 int axp152_set_ldo0(enum axp152_ldo0_voltage voltage, enum axp152_ldo0_current current_limit)

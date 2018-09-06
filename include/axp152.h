@@ -37,6 +37,17 @@ enum axp152_ldo0_current {
 	AXP152_LDO0_CUR_500MA    = 0x3,
 };
 
+#define AXP152_DCDC_WORKMODE_AUTO	0
+#define AXP152_DCDC_WORKMODE_PWM	1
+
+enum axp152_dcdc_regulator {
+	AXP152_DCDC1 = 0,
+	AXP152_DCDC2,
+	AXP152_DCDC3,
+	AXP152_DCDC4,
+};
+
+int axp152_set_dcdc_workmode(enum axp152_dcdc_regulator reg, int mode);
 int axp152_set_dcdc2(int mvolt);
 int axp152_set_dcdc3(int mvolt);
 int axp152_set_dcdc4(int mvolt);
