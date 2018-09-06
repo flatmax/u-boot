@@ -480,7 +480,7 @@ int board_axp152_init(void)
 	ret |= axp152_set_dcdc4(950);
 
 	/* Enable 3V3_OUT */
-	ret |= axp152_set_ldo0(AXP152_LDO0_3V3, AXP152_LDO0_CUR_1500MA);
+	ret |= axp152_set_ldo0(AXP152_LDO0_3V3, AXP152_LDO0_CUR_900MA);
 
 	/*
 	 * Always cycle WIFI_VRF otherwise the chip might be in some inconsistent state
