@@ -473,7 +473,7 @@ int board_axp152_init(void)
 	/* Set VDDIO_AO to 3.1V */
 	ret |= axp152_set_ldo2(3300);
 
-	/* Set VDDIO to 3.1V */
+	/* Set VDDIO to 3.3V */
 	ret |= axp152_set_aldo1(AXP152_ALDO_3V3);
 
 	/* Set VDD_EE to 0.95V */
