@@ -158,5 +158,10 @@ int axp152_init(void)
 	reg |= AXP152_POWEROFF_SEQ;
 	ret = axp152_write(AXP152_SHUTDOWN, reg);
 
+	/* Set some regs to a default value, this regs are changed on a reboot */
+	axp152_write(AXP152_GPIO3, 0x07);
+	axp152_write(AXP152_IRQ3_EN, 0x00);
+	axp152_write(AXP152_POWER_RECOVERY, 0x07);
+
 	return ret;
 }
