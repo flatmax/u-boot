@@ -72,6 +72,24 @@ int axp152_set_dcdc4(int mvolt)
 	return axp152_write(AXP152_DCDC4_VOLTAGE, target);
 }
 
+int axp152_set_dcdc_workmode(enum axp152_dcdc_regulator id, int mode)
+{
+	u8 reg;
+	int ret;
+
+	if (id < AXP152_DCDC1 || id > AXP152_DCDC4)
+		return -EINVAL;
+
+	ret = axp152_read(AXP152_DCDC_WORKMODE, &reg);
+	if (ret)
+		return ret;
+
+	reg = reg & ~(1 << (AXP152_DCDC4 - id));
+	reg |= mode << (AXP152_DCDC4 - id);
+
+	return axp152_write(AXP152_DCDC_WORKMODE, reg);
+}
+
 int axp152_set_ldo0(enum axp152_ldo0_volts volt, enum axp152_ldo0_curr_limit curr_limit)
 {
 	u8 target = curr_limit | (volt << 4) | (1 << 7);

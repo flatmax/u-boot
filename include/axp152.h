@@ -19,6 +19,7 @@ enum axp152_reg {
 	AXP152_POWER_RECOVERY = 0x31,
 	AXP152_SHUTDOWN = 0x32,
 	AXP152_IRQ3_EN = 0x42,
+	AXP152_DCDC_WORKMODE = 0x80,
 	AXP152_GPIO0 = 0x90,
 	AXP152_GPIO3 = 0x93,
 };
@@ -98,7 +99,17 @@ enum axp152_aldo_voltages {
 #define AXP_GPIO_CTRL_INPUT			0x02 /* Input */
 #define AXP_GPIO_STATE			0x97
 #define AXP_GPIO_STATE_OFFSET			0
+#define AXP152_DCDC_WORKMODE_AUTO	0
+#define AXP152_DCDC_WORKMODE_PWM	1
 
+enum axp152_dcdc_regulator {
+	AXP152_DCDC1 = 0,
+	AXP152_DCDC2,
+	AXP152_DCDC3,
+	AXP152_DCDC4,
+};
+
+int axp152_set_dcdc_workmode(enum axp152_dcdc_regulator reg, int mode);
 int axp152_set_dcdc1(enum axp152_dcdc1_voltages volt);
 int axp152_set_dcdc2(int mvolt);
 int axp152_set_dcdc3(int mvolt);
