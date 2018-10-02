@@ -462,6 +462,13 @@ int power_init_board(void)
 	i2c_set_bus_num(3);
 
 	axp152_init();
+
+	/*
+	 * Set the DCDC2 (VDD_SOC_IN) workmode back to auto since it might have
+	 * been changed to PWM in the kernel before rebooting.
+	 */
+	axp152_set_dcdc_workmode(AXP152_DCDC2, AXP152_DCDC_WORKMODE_AUTO);
+
 	/* Disable LDO0 and ALDO2 */
 	axp152_disable_ldo0();
 	axp152_set_power_output(0xFB);
