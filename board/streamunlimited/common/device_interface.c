@@ -74,6 +74,7 @@ static const struct module_map_entry module_map[] = {
 	{ SUE_MODULE_S1832, 1, 0x0F }, // MSB is not deterministic on Stream1832 L1
 	{ SUE_MODULE_S1832, 1, 0x1F }, // MSB is not deterministic on Stream1832 L1
 	{ SUE_MODULE_S1832, 2, 0x1E },
+	{ SUE_MODULE_S1832, 3, 0x00 },
 };
 
 static const char *carrier_names[] = {
