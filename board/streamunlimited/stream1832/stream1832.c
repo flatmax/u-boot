@@ -693,6 +693,36 @@ int checkhw(char * name)
 }
 #endif
 
+#if defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP)
+int ft_board_setup(void *blob, bd_t *bd)
+{
+	int node;
+	int ret;
+	fdt32_t tmp[4] = { 0x0, 0x0, 0x0, 0x0 };
+	uint32_t ddr_size = get_effective_memsize();
+
+	/*
+	 * This patches the `linux,usable-memory` property in the device-tree,
+	 * with this the kernel is able to boot on 2Gb as well as on 4Gb modules.
+	 */
+	node = fdt_path_offset(blob, "/memory@00000000");
+	if (node < 0) {
+		printf("WARN: Could not find the memory node %d\n", node);
+		return -ENOENT;
+	}
+
+	tmp[3] = cpu_to_fdt32(ddr_size);
+
+	ret = fdt_setprop(blob, node, "linux,usable-memory", &tmp, sizeof(tmp));
+	if (ret < 0) {
+		printf("WARN: Could not set `linux,usable-memory` property %d\n", ret);
+		return ret;
+	}
+
+	return 0;
+}
+#endif /* defined(CONFIG_OF_LIBFDT) && defined(CONFIG_OF_BOARD_SETUP) */
+
 const char * const _env_args_reserve_[] =
 {
 		"aml_dt",

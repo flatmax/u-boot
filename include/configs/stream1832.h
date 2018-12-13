@@ -573,6 +573,7 @@
 
 
 #define CONFIG_AXP152_POWER
+#define CONFIG_OF_BOARD_SETUP
 
 #endif
 
