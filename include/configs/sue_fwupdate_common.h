@@ -62,7 +62,7 @@
         "echo \"INFO: resetting...\"; " \
         "reset;\0" \
 \
-    "kernel_common_args=setenv bootargs console=ttyS0,115200 panic=1; " \
+    "kernel_common_args=setenv bootargs console=ttyS0,115200 panic=1 phy-aml-new-usb3.forceid=0; " \
         /*"fec.macaddr=${eth_int_addr} ${mtdparts} ${optargs}; " */ \
         "if test ${secure_board} = 1; " \
             "then " \
