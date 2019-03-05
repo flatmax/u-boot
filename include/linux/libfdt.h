@@ -52,7 +52,9 @@
  */
 
 #include <linux/libfdt_env.h>
+#include <linux/string.h>
 #include <fdt.h>
+#include <inttypes.h>
 
 #define FDT_FIRST_SUPPORTED_VERSION	0x10
 #define FDT_LAST_SUPPORTED_VERSION	0x11

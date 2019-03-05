@@ -1,6 +1,8 @@
 #ifndef _SHA256_H
 #define _SHA256_H
 
+#include <inttypes.h>
+
 #define SHA256_SUM_LEN	32
 
 /* Reset watchdog each time we process this many bytes */
