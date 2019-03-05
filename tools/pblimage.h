@@ -10,6 +10,7 @@
 #define RCW_BYTES	64
 #define RCW_PREAMBLE	0xaa55aa55
 #define RCW_HEADER	0x010e0100
+#include <inttypes.h>
 
 struct pbl_header {
 	uint32_t preamble;

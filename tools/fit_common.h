@@ -10,6 +10,7 @@
 #include "imagetool.h"
 #include "mkimage.h"
 #include <image.h>
+#include <stdbool.h>
 
 int fit_verify_header(unsigned char *ptr, int image_size,
 			struct image_tool_params *params);

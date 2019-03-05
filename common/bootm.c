@@ -25,6 +25,7 @@
 #include "mkimage.h"
 #endif
 
+#include <stdbool.h>
 #include <command.h>
 #include <bootm.h>
 #include <image.h>
