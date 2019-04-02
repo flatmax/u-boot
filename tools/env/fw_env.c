@@ -40,6 +40,10 @@
 #include "fw_env_private.h"
 #include "fw_env.h"
 
+static char empty_env[] = {
+	"\0"
+};
+
 struct env_opts default_opts = {
 #ifdef CONFIG_FILE
 	.config_file = CONFIG_FILE
@@ -1360,9 +1364,15 @@ int fw_env_open(struct env_opts *opts)
 	crc0_ok = (crc0 == *environment.crc);
 	if (!HaveRedundEnv) {
 		if (!crc0_ok) {
-			fprintf (stderr,
-				"Warning: Bad CRC, using default environment\n");
-			memcpy(environment.data, default_environment, sizeof default_environment);
+			if (opts->fallback_default_env) {
+				fprintf (stderr,
+					"Warning: Bad CRC, using default environment\n");
+				memcpy(environment.data, default_environment, sizeof default_environment);
+			} else {
+				fprintf (stderr,
+					"Warning: Bad CRC, using empty environment\n");
+				memcpy(environment.data, empty_env, sizeof empty_env);
+			}
 		}
 	} else {
 		flag0 = *environment.flags;
@@ -1421,10 +1431,15 @@ int fw_env_open(struct env_opts *opts)
 		} else if (!crc0_ok && crc1_ok) {
 			dev_current = 1;
 		} else if (!crc0_ok && !crc1_ok) {
-			fprintf (stderr,
-				"Warning: Bad CRC, using default environment\n");
-			memcpy (environment.data, default_environment,
-				sizeof default_environment);
+			if (opts->fallback_default_env) {
+				fprintf (stderr,
+					"Warning: Bad CRC, using default environment\n");
+				memcpy(environment.data, default_environment, sizeof default_environment);
+			} else {
+				fprintf (stderr,
+					"Warning: Bad CRC, using empty environment\n");
+				memcpy(environment.data, empty_env, sizeof empty_env);
+			}
 			dev_current = 0;
 		} else {
 			switch (environment.flag_scheme) {
