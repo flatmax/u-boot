@@ -312,17 +312,14 @@ const char *bootdelay_process(void)
 	bootdelay = s ? (int)simple_strtol(s, NULL, 10) : CONFIG_BOOTDELAY;
 
 #if defined(is_boot_from_usb)
-	if (is_boot_from_usb() && env_get("bootcmd_mfg")) {
+	if (is_boot_from_usb()) {
 		disconnect_from_pc();
-		printf("Boot from USB for mfgtools\n");
 		bootdelay = 0;
-		set_default_env("Use default environment for \
-				 mfgtools\n");
-	} else if (is_boot_from_usb()) {
-		printf("Boot from USB for uuu\n");
-		env_set("bootcmd", "fastboot 0");
+
+		printf("USB boot for mfgboot\n");
+		set_default_env("Using default environment for mfgboot\n");
 	} else {
-		printf("Normal Boot\n");
+		printf("Normal boot\n");
 	}
 #endif
 
