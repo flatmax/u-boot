@@ -1,0 +1,9 @@
+config SUE_ADC_CARRIER_DETECT
+	bool "Support ADC carrier board detection for StreamUnlimited targets"
+	default n
+	help
+	  This allows the automatic detection of carrier (+daughter) boards
+	  using an ADC. However some targets (like Stream195x) do not have
+	  an ADC on the SoC, for that reson this option is disabled per default.
+	  If you enabled it, you must provide the ADC readout code in the
+	  device_interface.c file.
