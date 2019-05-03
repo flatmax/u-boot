@@ -123,7 +123,12 @@ int do_bootm(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 			return do_bootm_subcommand(cmdtp, flag, argc, argv);
 	}
 
-#ifdef CONFIG_SECURE_BOOT
+	/*
+	 * If FIT image signature checking is enabled we do not care about
+	 * HAB authentication of any images since the default U-Boot image
+	 * verification will handle this.
+	 */
+#if defined(CONFIG_SECURE_BOOT) && !defined(CONFIG_FIT_SIGNATURE)
 	extern int authenticate_image(
 			uint32_t ddr_start, uint32_t raw_image_size);
 
