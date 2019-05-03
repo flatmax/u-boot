@@ -57,6 +57,12 @@ config BOOTCOUNT_RAM
 	  Store the bootcount in DRAM protected against against bit errors
 	  due to short power loss or holding a system in RESET.
 
+config BOOTCOUNT_FWUPDATE
+	bool "Boot counter using fwupdate flag store"
+	depends on TARGET_STREAM195X
+	help
+	  This will use the boot counter in the fwupdate flag driver.
+
 config BOOTCOUNT_I2C
 	bool "Boot counter on I2C device"
 	help
