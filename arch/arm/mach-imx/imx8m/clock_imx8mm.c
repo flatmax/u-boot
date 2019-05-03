@@ -608,6 +608,15 @@ void enable_display_clk(unsigned char enable)
 	}
 }
 
+/* Based on the imx8mq code */
+void init_nand_clk(void)
+{
+	clock_enable(CCGR_RAWNAND, 0);
+	clock_set_target_val(NAND_CLK_ROOT, CLK_ROOT_ON |
+		CLK_ROOT_SOURCE_SEL(3) | CLK_ROOT_POST_DIV(CLK_ROOT_POST_DIV4)); /* 100M */
+	clock_enable(CCGR_RAWNAND, 1);
+}
+
 int clock_init()
 {
 	uint32_t val_cfg0;
