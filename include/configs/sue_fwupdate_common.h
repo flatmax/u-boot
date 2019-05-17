@@ -84,6 +84,10 @@
     "nandroot=ubi0:nsdk-rootfs rw\0" \
     "nandrootfstype=ubifs rootwait=1\0" \
     "nandargs=run kernel_common_args; " \
+        "if test ${swufail} = yes; " \
+            "then " \
+            "setenv bootargs ${bootargs} swufail; " \
+        "fi; " \
         "setenv bootargs ${bootargs} " \
         "ubi.mtd=5 root=${nandroot} noinitrd ${wdtargs} " \
         "rootfstype=${nandrootfstype};\0" \
@@ -178,21 +182,29 @@
         "else " \
             "echo \"INFO: Bootcount != 1, not checking factory state or USB update request\"; " \
         "fi; " \
-        "if fwup fail; " \
+        "if fwup update; " \
             "then " \
             "min_boot_retry=3;" \
             "if test ${bootcount} -gt ${min_boot_retry}; " \
                 "then " \
+                "echo \"INFO: Update flag is set, bootcount is greater than ${min_boot_retry}\"; " \
+                "swufail=yes; " \
+            "else " \
+                "echo \"INFO: Update flag is set but bootcount not greater than ${min_boot_retry}\"; " \
+                "boot_swupdate=yes; " \
+            "fi; " \
+        "else " \
+            "if fwup fail; " \
+                "then " \
+                "min_boot_retry=3;" \
+                "if test ${bootcount} -gt ${min_boot_retry}; " \
+                    "then " \
                     "echo \"INFO: Fail flag is set, bootcount is greater than ${min_boot_retry}\"; " \
                     "boot_swupdate=yes; " \
                 "else " \
                     "echo \"INFO: Fail flag is set but bootcount not greater than ${min_boot_retry}\"; " \
                 "fi; " \
-        "fi; " \
-        "if fwup update; " \
-            "then " \
-            "echo \"INFO: Update flag is set\"; " \
-            "boot_swupdate=yes; " \
+            "fi; " \
         "fi; " \
         "if test ${boot_swupdate} = yes; " \
             "then " \
