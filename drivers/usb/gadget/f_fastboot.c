@@ -3486,7 +3486,7 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing variable");
+		pr_err("missing variable\n");
 		fastboot_tx_write_str("FAILmissing var");
 		return;
 	}
@@ -3957,7 +3957,7 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing partition name");
+		pr_err("missing partition name\n");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -4015,7 +4015,7 @@ static void cb_erase(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing partition name");
+		pr_err("missing partition name\n");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -4142,7 +4142,7 @@ static void cb_getvar(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing variable");
+		pr_err("missing variable\n");
 		fastboot_tx_write_str("FAILmissing var");
 		return;
 	}
@@ -4194,7 +4194,7 @@ static void cb_flash(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing partition name");
+		pr_err("missing partition name\n");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -4246,7 +4246,7 @@ static void cb_erase(struct usb_ep *ep, struct usb_request *req)
 
 	strsep(&cmd, ":");
 	if (!cmd) {
-		pr_err("missing partition name");
+		pr_err("missing partition name\n");
 		fastboot_tx_write_str("FAILmissing partition name");
 		return;
 	}
@@ -4530,7 +4530,7 @@ static void rx_handler_command(struct usb_ep *ep, struct usb_request *req)
 	}
 
 	if (!func_cb) {
-		pr_err("unknown command: %.*s", req->actual, cmdbuf);
+		pr_err("unknown command: %.*s\n", req->actual, cmdbuf);
 		fastboot_tx_write_str("FAILunknown command");
 	} else {
 		if (req->actual < req->length) {
@@ -4538,7 +4538,7 @@ static void rx_handler_command(struct usb_ep *ep, struct usb_request *req)
 			buf[req->actual] = 0;
 			func_cb(ep, req);
 		} else {
-			pr_err("buffer overflow");
+			pr_err("buffer overflow\n");
 			fastboot_tx_write_str("FAILbuffer overflow");
 		}
 	}
