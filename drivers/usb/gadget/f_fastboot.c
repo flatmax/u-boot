@@ -3244,11 +3244,15 @@ static int get_single_var(char *cmd, char *response)
 
 		snprintf(response + strlen(response), chars_left, "0x%x", CONFIG_FASTBOOT_BUF_SIZE);
 	} else if (!strcmp_l1("erase-block-size", cmd)) {
+#if defined(CONFIG_FASTBOOT_STORAGE_MMC)
 		mmc_dev_no = mmc_get_env_dev();
 		mmc = find_mmc_device(mmc_dev_no);
 		blksz = get_block_size();
 		snprintf(response + strlen(response), chars_left, "0x%x",
 				(blksz * mmc->erase_grp_size));
+#else
+		strncat(response, "N/A", chars_left);
+#endif
 	} else if (!strcmp_l1("logical-block-size", cmd)) {
 		blksz = get_block_size();
 		snprintf(response + strlen(response), chars_left, "0x%x", blksz);
