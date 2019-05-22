@@ -82,7 +82,8 @@
 	"mtdparts_arg=" CONFIG_MTDPARTS_DEFAULT "\0" \
 	"console=ttymxc0,115200\0" \
 	"bootcmd=" SUE_FWUPDATE_BOOTCOMMAND "\0" \
-	"bootcmd_mfg=run kernel_common_args; setenv bootargs ${bootargs} rootfstype=ramfs; bootm ${fdt_addr}\0" \
+	"bootcmd_mfg=fastboot 0; reset\0" \
+	"mfg_run=run kernel_common_args; setenv bootargs ${bootargs} rootfstype=ramfs; bootm ${fdt_addr}\0" \
 	SUE_FWUPDATE_EXTRA_ENV_SETTINGS
 
 /* Link Definitions */
