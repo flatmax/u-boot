@@ -55,6 +55,13 @@ config BCB_SUPPORT
 	help
 	  This enables the boot control block support for android reboot command
 
+config FASTBOOT_SUE_FACTORY_SUBSET
+	bool "Only support fastboot command subset required for StreamUnlimited factory boot"
+	depends on !NOT_UUU_BUILD
+	help
+	  This disables most of the fastboot commands, only supported subset
+	  is UCmd, ACmd and the download commands.
+
 choice
         prompt "Android Image Storage select"
         default FASTBOOT_STORAGE_MMC
