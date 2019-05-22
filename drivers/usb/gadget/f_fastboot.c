@@ -4430,6 +4430,22 @@ struct cmd_dispatch_info {
 	void (*cb)(struct usb_ep *ep, struct usb_request *req);
 };
 
+#if CONFIG_IS_ENABLED(FASTBOOT_SUE_FACTORY_SUBSET)
+static const struct cmd_dispatch_info cmd_dispatch_info[] = {
+	{
+		.cmd = "UCmd:",
+		.cb = cb_run_uboot_cmd,
+	},
+	{
+		.cmd ="ACmd:",
+		.cb = cb_run_uboot_acmd,
+	},
+	{
+		.cmd = "download:",
+		.cb = cb_download,
+	},
+};
+#else
 static const struct cmd_dispatch_info cmd_dispatch_info[] = {
 #ifdef CONFIG_FSL_FASTBOOT
 	{
@@ -4508,6 +4524,7 @@ static const struct cmd_dispatch_info cmd_dispatch_info[] = {
 	},
 #endif
 };
+#endif /* FASTBOOT_SUE_FACTORY_SUBSET */
 
 static void rx_handler_command(struct usb_ep *ep, struct usb_request *req)
 {
