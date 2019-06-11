@@ -35,6 +35,7 @@ void hw_watchdog_init(void)
 {
 	struct watchdog_regs *wdog = (struct watchdog_regs *)WDOG1_BASE_ADDR;
 	u16 timeout;
+	u32 reg;
 
 	/*
 	 * The timer watchdog can be set between
@@ -45,8 +46,15 @@ void hw_watchdog_init(void)
 #define CONFIG_WATCHDOG_TIMEOUT_MSECS 128000
 #endif
 	timeout = (CONFIG_WATCHDOG_TIMEOUT_MSECS / 500) - 1;
-	writew(WCR_WDZST | WCR_WDBG | WCR_WDE | WCR_WDT | WCR_SRS |
-		SET_WCR_WT(timeout), &wdog->wcr);
+
+	reg = readw(&wdog->wcr);
+
+	reg &= ~SET_WCR_WT(0xFF);
+	reg |= SET_WCR_WT(timeout);
+
+	reg |= WCR_WDE | WCR_WDT;
+
+	writew(reg, &wdog->wcr);
 	hw_watchdog_reset();
 }
 #endif
