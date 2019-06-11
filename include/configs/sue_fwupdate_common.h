@@ -23,6 +23,10 @@
  *              swu_load_addr                   - base RAM address for u-boot operations
  *              factory_state                   - whether the board is in a factory state
  *              usb_update_req                  - whether the USB update request is active
+ *
+ * NOTE: The watchdog is enabled before the kernel starts booting, this happens because we have `CONFIG_IMX_WATCHDOG` enabled
+ * as soon as the kernel starts booting, the `imx2_wdt` driver will take over. But if something gets stuck between starting
+ * the kernel and the probing ot the imx2_wdt driver, the watchdog will be able to reset the CPU.
  */
 
 #define SUE_FWUPDATE_EXTRA_ENV_SETTINGS \
@@ -73,7 +77,7 @@
         "reset;\0" \
 \
     "kernel_common_args=const toenv eth_int_addr; " \
-        "setenv bootargs console=${console} panic=1 " \
+        "setenv bootargs console=${console} panic=1 ${wdtargs} " \
         "fec.macaddr=${eth_int_addr} ${mtdparts} ${optargs}; " \
         "if test ${secure_board} = 1; " \
             "then " \
@@ -89,7 +93,7 @@
             "setenv bootargs ${bootargs} swufail; " \
         "fi; " \
         "setenv bootargs ${bootargs} " \
-        "ubi.mtd=5 root=${nandroot} noinitrd ${wdtargs} " \
+        "ubi.mtd=5 root=${nandroot} noinitrd " \
         "rootfstype=${nandrootfstype};\0" \
     "nand_boot=echo \"Booting from nand ...\"; " \
         "run nandargs; " \
