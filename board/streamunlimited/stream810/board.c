@@ -327,13 +327,18 @@ int ft_board_setup(void *blob, bd_t *bd)
 	return 0;
 }
 
-
+static const iomux_v3_cfg_t wdog_pads[] = {
+	MX7D_PAD_GPIO1_IO00__WDOG1_WDOG_B | MUX_PAD_CTRL(NO_PAD_CTRL),
+};
 
 int board_early_init_f(void)
 {
 	sue_device_detect(&current_device);
 
 	setup_iomux_uart();
+
+	imx_iomux_v3_setup_multiple_pads(wdog_pads, ARRAY_SIZE(wdog_pads));
+	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
 
 #ifdef CONFIG_SYS_I2C_MXC
 	setup_i2c(3, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info4);
@@ -484,10 +489,6 @@ int power_init_board(void)
 }
 #endif
 
-static const iomux_v3_cfg_t wdog_pads[] = {
-	MX7D_PAD_GPIO1_IO00__WDOG1_WDOG_B | MUX_PAD_CTRL(NO_PAD_CTRL),
-};
-
 int board_late_init(void)
 {
 	char buffer[64];
@@ -507,9 +508,6 @@ int board_late_init(void)
 	if (sue_setup_mtdparts() < 0) {
 		printf("ERROR: sue_setup_mtdparts() call failed!\n");
 	}
-
-	imx_iomux_v3_setup_multiple_pads(wdog_pads, ARRAY_SIZE(wdog_pads));
-	set_wdog_reset((struct wdog_regs *)WDOG1_BASE_ADDR);
 
 	if (current_device.carrier_flags & SUE_CARRIER_FLAGS_HAS_DAUGHTER) {
 		snprintf(buffer, sizeof(buffer), "%s_%s_%s",
