@@ -46,6 +46,21 @@ void watchdog_reset(void)
 	*P_WATCHDOG_RESET = 0;
 }
 
+#ifdef CONFIG_HW_WATCHDOG
+void hw_watchdog_init(void)
+{
+#ifndef CONFIG_WATCHDOG_TIMEOUT_MSECS
+#define CONFIG_WATCHDOG_TIMEOUT_MSECS 120000
+#endif
+	watchdog_init(CONFIG_WATCHDOG_TIMEOUT_MSECS);
+}
+
+void hw_watchdog_reset(void)
+{
+	watchdog_reset();
+}
+#endif
+
 void watchdog_disable(void)
 {
 	// turn off internal counter and disable
