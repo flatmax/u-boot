@@ -29,12 +29,12 @@
 void watchdog_init(uint32_t msec)
 {
 	// src: 24MHz
-	// div: 24000 for 1ms
+	// div: 48000 for 2ms
 	// reset ao-22 and ee-21
-	*P_WATCHDOG_CNTL = (1<<24)|(1<<25)|(1<<22)|(1<<21)|(24000-1);
+	*P_WATCHDOG_CNTL = (1<<24)|(1<<25)|(1<<22)|(1<<21)|(48000-1);
 
 	// set timeout
-	*P_WATCHDOG_TCNT = msec;
+	*P_WATCHDOG_TCNT = msec / 2;
 	*P_WATCHDOG_RESET = 0;
 
 	// enable
