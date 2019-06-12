@@ -45,8 +45,8 @@
 /* config saradc*/
 #define CONFIG_CMD_SARADC 1
 
-/* command watchdog */
-#define CONFIG_CMD_WATCHDOG 1
+#define CONFIG_HW_WATCHDOG
+#define CONFIG_WATCHDOG_TIMEOUT_MSECS 120000
 
 /* Serial config */
 #define CONFIG_CONS_INDEX 2
