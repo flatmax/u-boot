@@ -13,6 +13,11 @@
 #include <g_dnl.h>
 #include <usb.h>
 
+__weak int is_fastboot_allowed(void)
+{
+	return 1;
+}
+
 static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 {
 	int controller_index;
@@ -21,6 +26,11 @@ static int do_fastboot(cmd_tbl_t *cmdtp, int flag, int argc, char *const argv[])
 
 	if (argc < 2)
 		return CMD_RET_USAGE;
+
+	if (!is_fastboot_allowed()) {
+		puts("fastboot is not allowed\n");
+		return CMD_RET_FAILURE;
+	}
 
 	usb_controller = argv[1];
 	controller_index = simple_strtoul(usb_controller, NULL, 0);
