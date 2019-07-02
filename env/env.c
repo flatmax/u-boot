@@ -7,6 +7,7 @@
 
 #include <common.h>
 #include <environment.h>
+#include <asm/mach-imx/hab.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -168,6 +169,13 @@ int env_load(void)
 	struct env_driver *drv;
 	int prio;
 
+	set_default_env("Loading default environment for merging\n");
+
+	if (imx_hab_is_enabled()) {
+		printf("Board is locked, not merging with environment from NAND\n");
+		return 0;
+	}
+
 	for (prio = 0; (drv = env_driver_lookup(ENVOP_LOAD, prio)); prio++) {
 		int ret;
 
@@ -177,7 +185,7 @@ int env_load(void)
 		if (!env_has_inited(drv->location))
 			continue;
 
-		printf("Loading Environment from %s... ", drv->name);
+		printf("Merging Environment from %s... ", drv->name);
 		ret = drv->load();
 		if (ret)
 			printf("Failed (%d)\n", ret);
@@ -194,6 +202,11 @@ int env_load(void)
 int env_save(void)
 {
 	struct env_driver *drv;
+
+	if (imx_hab_is_enabled()) {
+		printf("Board is locked, environment saving is disabled\n");
+		return -EPERM;
+	}
 
 	drv = env_driver_lookup(ENVOP_SAVE, 0);
 	if (drv) {
@@ -224,6 +237,13 @@ int env_init(void)
 	struct env_driver *drv;
 	int ret = -ENOENT;
 	int prio;
+
+	if (imx_hab_is_enabled()) {
+		gd->env_addr = (ulong)&default_environment[0];
+		gd->env_valid = ENV_VALID;
+
+		return 0;
+	}
 
 	for (prio = 0; (drv = env_driver_lookup(ENVOP_INIT, prio)); prio++) {
 		if (!drv->init || !(ret = drv->init()))
