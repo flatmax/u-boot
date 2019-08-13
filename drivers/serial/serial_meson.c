@@ -232,7 +232,9 @@ static int serial_getc_port (unsigned long port_base)
     unsigned char ch;
 
     /* Wait till character is placed in fifo */
-	while ((readl(P_UART_STATUS(port_base)) & UART_STAT_MASK_RFIFO_CNT) == 0) ;
+	if ((readl(P_UART_STATUS(port_base)) & UART_STAT_MASK_RFIFO_CNT) == 0)
+		return -EAGAIN;
+
 	ch = readl(P_UART_RFIFO(port_base)) & 0x00ff;
     /* Also check for overflow errors */
     if (readl(P_UART_STATUS(port_base)) & (UART_STAT_MASK_PRTY_ERR | UART_STAT_MASK_FRAM_ERR))

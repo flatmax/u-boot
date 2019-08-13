@@ -12,6 +12,7 @@
 #include <post.h>
 #include <linux/compiler.h>
 #include <errno.h>
+#include <watchdog.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -452,7 +453,15 @@ void serial_setbrg(void)
  */
 int serial_getc(void)
 {
-	return get_current()->getc();
+	int err;
+
+	do {
+		err = get_current()->getc();
+		if (err == -EAGAIN)
+			udelay(20); /* calls WATCHDOG_RESET(); */
+	} while (err == -EAGAIN);
+
+	return err >= 0 ? err : 0;
 }
 
 /**
