@@ -81,6 +81,10 @@ void ddr_cfg_phy(struct dram_timing_info *dram_timing)
 		dram_cfg++;
 	}
 
+	fsp_msg = dram_timing->fsp_msg;
+	printf("Resetting DRAM to %dMTS\n", fsp_msg->drate);
+	ddrphy_init_set_dfi_clk(fsp_msg->drate);
+
 	/* save the ddr PHY trained CSR in memory for low power use */
 	ddrphy_trained_csr_save(dram_timing->ddrphy_trained_csr,
 				dram_timing->ddrphy_trained_csr_num);
