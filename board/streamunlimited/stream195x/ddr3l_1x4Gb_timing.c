@@ -3,60 +3,103 @@
  *
  * SPDX-License-Identifier:	GPL-2.0+
  *
- * Generated code from MX8M_DDR_tool
- * Align with uboot-imx_v2018.03_4.14.78_1.0.0_ga
+ * Initially generated code from MX8M_DDR_tool, but register names
+ * were added and now the shadow registers are written for 667 MT/s
+ * operation.
+ *
+ * File used as the base (from shared):
+ *  * ddr3l_timing_1x4Gbit@800MHz.c
+ *
+ * Merged shadow registers with the following file:
+ *  * ddr3l_timing_1x4Gbit@336MHz.c
+ *
+ * Two registers were not available as shadow registers, so the "worse"
+ * values were taken for both:
+ * * DDRC_INIT0_0:
+ *   * 1600 MT/s value: 0xc00200c5
+ *   * 667 MT/s value:  0xc0020054
+ *
+ *   Bits [11:0] are the number of cycles to wait after reset before starting
+ *   the SDRAM initialization sequence. Here we just took the slower/larger
+ *   value `0xc5`.
+ *
+ *  * DDRC_ZQCTL1_0
+ *   * 1600 MT/s value: 0xc350
+ *   * 667 MT/s value:  0x520a
+ *
+ *   Bits [19:0] specify the average interval for the ZQ calibration commands,
+ *   here the lower value was taken `0x520a` to make sure the calibration occurs
+ *   often enough.
  */
 
 #include <linux/kernel.h>
 #include <asm/arch/imx8m_ddr.h>
+#include <asm/arch-imx8m/imx-regs-imx8mm.h>
 
 static struct dram_cfg_param ddr_ddrc_cfg[] = {
 	/** Initialize DDRC registers **/
-	{0x3d400304,0x1},
-	{0x3d400030,0x20},
-	{0x3d400000,0x81041001},
-	{0x3d400010,0x40004010},
-	{0x3d400064,0x610068},
-	{0x3d4000d0,0xc00200c5},
-	{0x3d4000d4,0x1000b},
-	{0x3d4000dc,0x1c700004},
-	{0x3d4000e0,0x180000},
-	{0x3d4000e4,0x90000},
-	{0x3d4000f0,0x0},
-	{0x3d4000f4,0xee5},
-	{0x3d400100,0xc101b0e},
-	{0x3d400104,0x30314},
-	{0x3d400108,0x4060509},
-	{0x3d40010c,0x2006},
-	{0x3d400110,0x6020306},
-	{0x3d400114,0x4040302},
-	{0x3d400120,0x909},
-	{0x3d400180,0x40800020},
-	{0x3d400184,0xc350},
-	{0x3d400190,0x3868203},
-	{0x3d400194,0x20303},
-	{0x3d4001b4,0x603},
-	{0x3d400198,0x7000000},
-	{0x3d4001b0,0x11},
-	{0x3d4001a0,0x400018},
-	{0x3d4001a4,0x5003c},
-	{0x3d4001a8,0x80000000},
-	{0x3d4001c4,0x0},
-	{0x3d400200,0x1f},
-	{0x3d400204,0x70707},
-	{0x3d400208,0x0},
-	{0x3d40020c,0x1f000000},
-	{0x3d400210,0x1f1f},
-	{0x3d400214,0x6060606},
-	{0x3d400218,0xf060606},
-	{0x3d400224,0xa020b06},
-	{0x3d400228,0xa0a0a0a},
-	{0x3d40022c,0x0},
-	{0x3d400240,0x600060c},
-	{0x3d400244,0x1323},
-	{0x3d400264,0x9},
-	{0x3d40049c,0x100001},
-	{0x3d4004a0,0x41f},
+	{ DDRC_DBG1_0, 0x1 },
+	{ DDRC_PWRCTL_0, 0x20 },
+	{ DDRC_MSTR_0, 0x81041001 },
+	{ DDRC_MRCTRL0_0, 0x40004010 },
+	{ DDRC_RFSHTMG_0, 0x610068},
+	{ DDRC_INIT0_0, 0xc00200c5 },
+	{ DDRC_INIT1_0, 0x1000b },
+	{ DDRC_INIT3_0, 0x1c700004 },
+	{ DDRC_INIT4_0, 0x180000 },
+	{ DDRC_INIT5_0, 0x90000 },
+	{ DDRC_DIMMCTL_0, 0x0 },
+	{ DDRC_RANKCTL_0, 0xee5 },
+	{ DDRC_DRAMTMG0_0, 0xc101b0e },
+	{ DDRC_DRAMTMG1_0, 0x30314 },
+	{ DDRC_DRAMTMG2_0, 0x4060509 },
+	{ DDRC_DRAMTMG3_0, 0x2006 },
+	{ DDRC_DRAMTMG4_0, 0x6020306 },
+	{ DDRC_DRAMTMG5_0, 0x4040302 },
+	{ DDRC_DRAMTMG8_0, 0x909 },
+	{ DDRC_ZQCTL0_0, 0x40800020 },
+	{ DDRC_ZQCTL1_0, 0x520a },
+	{ DDRC_DFITMG0_0, 0x3868203 },
+	{ DDRC_DFITMG1_0, 0x20303 },
+	{ DDRC_DFITMG2_0, 0x603 },
+	{ DDRC_DFILPCFG0_0, 0x7000000 },
+	{ DDRC_DFIMISC_0, 0x11 },
+	{ DDRC_DFIUPD0_0, 0x400018 },
+	{ DDRC_DFIUPD1_0, 0x5003c },
+	{ DDRC_DFIUPD2_0, 0x80000000 },
+	{ DDRC_DFIPHYMSTR_0, 0x0 },
+	{ DDRC_ADDRMAP0_0, 0x1f },
+	{ DDRC_ADDRMAP1_0, 0x70707 },
+	{ DDRC_ADDRMAP2_0, 0x0 },
+	{ DDRC_ADDRMAP3_0, 0x1f000000 },
+	{ DDRC_ADDRMAP4_0, 0x1f1f },
+	{ DDRC_ADDRMAP5_0, 0x6060606 },
+	{ DDRC_ADDRMAP6_0, 0xf060606 },
+	{ DDRC_ADDRMAP9_0, 0xa020b06 },
+	{ DDRC_ADDRMAP10_0, 0xa0a0a0a },
+	{ DDRC_ADDRMAP11_0, 0x0 },
+	{ DDRC_ODTCFG_0, 0x600060c },
+	{ DDRC_ODTMAP_0, 0x1323 },
+	{ DDRC_PERFLPR1_0, 0x9 },
+	{ DDRC_PCFGWQOS0_0_0, 0x100001 },
+	{ DDRC_PCFGWQOS1_0_0, 0x41f },
+
+	/* 667 MT/s */
+	{ DDRC_FREQ1_RFSHTMG(0), 0x28002c },			/* different */
+	{ DDRC_FREQ1_INIT3(0), 0x12700004 },			/* different */
+	{ DDRC_FREQ1_INIT4(0), 0x180000 },			/* same */
+	{ DDRC_FREQ1_DRAMTMG0(0), 0x9090b07 },			/* different */
+	{ DDRC_FREQ1_DRAMTMG1(0), 0x20209 },			/* different */
+	{ DDRC_FREQ1_DRAMTMG2(0), 0x4060508 },			/* different */
+	{ DDRC_FREQ1_DRAMTMG3(0), 0x2006 },			/* same */
+	{ DDRC_FREQ1_DRAMTMG4(0), 0x3020203 },			/* different */
+	{ DDRC_FREQ1_DRAMTMG5(0), 0x3030202 },			/* different */
+	{ DDRC_FREQ1_DRAMTMG8(0), 0x909 },			/* same */
+	{ DDRC_FREQ1_ZQCTL0(0), 0x40800020 },			/* same */
+	{ DDRC_FREQ1_DFITMG0(0), 0x3868203 },			/* same */
+	{ DDRC_FREQ1_DFITMG1(0), 0x20303 },			/* same */
+	{ DDRC_FREQ1_DFITMG2(0), 0x603 },			/* same */
+	{ DDRC_FREQ1_ODTCFG(0), 0x600060c },			/* same */
 };
 
 /* PHY Initialize Configuration */
@@ -75,7 +118,10 @@ static struct dram_cfg_param ddr_ddrphy_cfg[] = {
 	{0x7055,0x3ff},
 	{0x8055,0x3ff},
 	{0x9055,0x3ff},
-	{0x200c5,0xb},
+
+	{ 0x200c5, 0xb }, /* DWC_DDRPHYA_MASTER0_PllCtrl2_p0 */
+	{ 0x1200c5, 0x7 }, /* DWC_DDRPHYA_MASTER0_PllCtrl2_p1 */
+
 	{0x2002e,0x1},
 	{0x20024,0x8},
 	{0x2003a,0x0},
@@ -102,6 +148,10 @@ static struct dram_cfg_param ddr_ddrphy_cfg[] = {
 	{0x20075,0x0},
 	{0x20050,0x0},
 	{0x20008,0x190},
+
+	{ 0x20008, 0x190 }, /* DWC_DDRPHYA_MASTER0_CalUclkInfo_p0 */
+	{ 0x120008, 0xa8 }, /* DWC_DDRPHYA_MASTER0_CalUclkInfo_p1 */
+
 	{0x20088,0x9},
 	{0x200b2,0x0},
 	{0x10043,0x581},
@@ -869,6 +919,24 @@ static struct dram_cfg_param ddr_fsp0_cfg[] = {
 	{0xd0000, 0x1},
 };
 
+static struct dram_cfg_param ddr_fsp1_cfg[] = {
+	{0xd0000, 0x0},
+	{0x54003,0x2a0},
+	{0x54004,0x2},
+	{0x54005,0x283c},
+	{0x54006,0x12c},
+	{0x54007,0x1000},
+	{0x54008,0x101},
+	{0x5400b,0x31f},
+	{0x5400c,0xc8},
+	{0x54012,0x1},
+	{0x5402f,0x1270},
+	{0x54030,0x4},
+	{0x54031,0x18},
+	{0x5403a,0x1323},
+	{0xd0000, 0x1},
+};
+
 /* DRAM PHY init engine image */
 static struct dram_cfg_param ddr_phy_pie[] = {
 	{0xd0000, 0x0},
@@ -1052,10 +1120,17 @@ static struct dram_cfg_param ddr_phy_pie[] = {
 	{0xd00e7,0x400},
 	{0x90017,0x0},
 	{0x90026,0x2c},
-	{0x2000b,0x32},
-	{0x2000c,0x64},
-	{0x2000d,0x3e8},
-	{0x2000e,0x2c},
+
+	{ 0x2000b, 0x32 }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY0_p0 */
+	{ 0x2000c, 0x64 }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY1_p0 */
+	{ 0x2000d, 0x3e8 }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY2_p0 */
+	{ 0x2000e, 0x2c }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY3_p0 */
+
+	{ 0x12000b, 0x15 }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY0_p1 */
+	{ 0x12000c, 0x2a }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY1_p1 */
+	{ 0x12000d, 0x1a4 }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY2_p1 */
+	{ 0x12000e, 0x2c }, /*  DWC_DDRPHYA_MASTER0_Seq0BDLY3_p1 */
+
 	{0x9000c,0x0},
 	{0x9000d,0x173},
 	{0x9000e,0x60},
@@ -1076,6 +1151,12 @@ static struct dram_fsp_msg ddr_dram_fsp_msg[] = {
 		.fsp_cfg = ddr_fsp0_cfg,
 		.fsp_cfg_num = ARRAY_SIZE(ddr_fsp0_cfg),
 	},
+	{
+		.drate = 667,
+		.fw_type = FW_1D_IMAGE,
+		.fsp_cfg = ddr_fsp1_cfg,
+		.fsp_cfg_num = ARRAY_SIZE(ddr_fsp1_cfg),
+	},
 };
 
 /* ddr timing config params */
@@ -1090,6 +1171,6 @@ struct dram_timing_info ddr3l_1x4Gb_dram_timing = {
 	.ddrphy_trained_csr_num = ARRAY_SIZE(ddr_ddrphy_trained_csr),
 	.ddrphy_pie = ddr_phy_pie,
 	.ddrphy_pie_num = ARRAY_SIZE(ddr_phy_pie),
-	.fsp_table = { 1600, },
+	.fsp_table = { 1600, 667 },
 };
 
