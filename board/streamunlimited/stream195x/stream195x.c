@@ -188,6 +188,8 @@ int power_init_board(void)
 	return 0;
 }
 
+#define WIFI_REG_EN_GPIO IMX_GPIO_NR(2, 8)
+
 int board_init(void)
 {
 	int ret;
@@ -197,6 +199,17 @@ int board_init(void)
 	ret = power_init_board();
 	if (ret)
 		printf("power_init_board() failed\n");
+
+	/*
+	 * Perform a reset of the WiFi chip and de-assert the reset line.
+	 * This is required, because without the reset, after a reboot, the
+	 * SDIO device will not be found on the bus leading to the `bcmdhd`
+	 * driver not probing.
+	 */
+	gpio_request(WIFI_REG_EN_GPIO, "wifi_reg");
+	gpio_direction_output(WIFI_REG_EN_GPIO, 0);
+	udelay(1000);
+	gpio_set_value(WIFI_REG_EN_GPIO, 1);
 
 #ifdef CONFIG_FEC_MXC
 	setup_fec();
