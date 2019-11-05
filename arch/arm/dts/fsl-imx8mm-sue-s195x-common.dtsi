@@ -19,6 +19,9 @@
 };
 
 &iomuxc {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wifi_reg>;
+
 	imx8mm-s195x-common {
 		pinctrl_i2c1: i2c1grp {
 			fsl,pins = <
@@ -42,6 +45,12 @@
 		pinctrl_wdog: wdoggrp {
 			fsl,pins = <
 				MX8MM_IOMUXC_GPIO1_IO02_WDOG1_WDOG_B	(PAD_CTL_PE_UP | PAD_CTL_HYS | PAD_CTL_DSE6x)
+			>;
+		};
+
+		pinctrl_wifi_reg: wifireggrp {
+			fsl,pins = <
+				MX8MM_IOMUXC_SD1_DATA6_GPIO2_IO8	(PAD_CTL_PE_UP | PAD_CTL_HYS)
 			>;
 		};
 	};
