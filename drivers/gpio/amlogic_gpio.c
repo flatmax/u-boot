@@ -66,7 +66,7 @@ static int aml_gpio_get_function(struct udevice *dev, unsigned offset)
 	unsigned int bit = plat->regs[REG_DIR].bit + offset;
 	unsigned int val;
 	val = readl(reg);
-	bool dir = !!(val * BIT(bit));
+	bool dir = !!(val & BIT(bit));
 
 
 	/* GPIOF_FUNC is not implemented yet */
