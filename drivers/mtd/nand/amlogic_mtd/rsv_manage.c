@@ -153,11 +153,11 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 				valid_page_num /= aml_chip->plane_num;
 
 				aml_chip->page_addr = page/ valid_page_num;
-	if (unlikely(aml_chip->page_addr >= aml_chip->internal_page_nums)) {
-		aml_chip->page_addr -= aml_chip->internal_page_nums;
-		aml_chip->page_addr |=
-		(1 << aml_chip->internal_chip_shift)*aml_chip->internal_chipnr;
-	}
+				if (unlikely(aml_chip->page_addr >= aml_chip->internal_page_nums)) {
+					aml_chip->page_addr -= aml_chip->internal_page_nums;
+					aml_chip->page_addr |=
+					(1 << aml_chip->internal_chip_shift)*aml_chip->internal_chipnr;
+				}
 			}
 			if (aml_chip->plane_num == 2) {
 				chip->select_chip(mtd, i);
@@ -172,25 +172,26 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 					NAND_CMD_READ0,
 					0x00,aml_chip->page_addr, i);
 
-			if (!aml_chip->aml_nand_wait_devready(aml_chip, i))
-				printk ("%s, %d,selected chip%d not ready\n",
-					__func__, __LINE__, i);
+				if (!aml_chip->aml_nand_wait_devready(aml_chip, i))
+					printk ("%s, %d,selected chip%d not ready\n",
+						__func__, __LINE__, i);
 
 				if (aml_chip->ops_mode & AML_CHIP_NONE_RB)
 					chip->cmd_ctrl(mtd,
 					NAND_CMD_READ0 & 0xff,
 					NAND_NCE | NAND_CLE | NAND_CTRL_CHANGE);
+
 				udelay(2);
 				aml_chip->aml_nand_command(aml_chip,
 					NAND_CMD_TWOPLANE_READ1,
 					0x00, aml_chip->page_addr, i);
 				udelay(2);
 
-		if (aml_chip->mfr_type  == NAND_MFR_SANDISK) {
-			for (j = 0; j < 6; j++)
-				col_data_sandisk[j] = chip->read_byte(mtd);
-		} else
-			col0_data = chip->read_byte(mtd);
+				if (aml_chip->mfr_type  == NAND_MFR_SANDISK) {
+					for (j = 0; j < 6; j++)
+						col_data_sandisk[j] = chip->read_byte(mtd);
+				} else
+					col0_data = chip->read_byte(mtd);
 
 				aml_chip->aml_nand_command(aml_chip,
 					NAND_CMD_TWOPLANE_READ2,
@@ -210,33 +211,33 @@ int aml_nand_scan_shipped_bbt(struct mtd_info *mtd)
 				//nand_get_chip();
 				//aml_chip->aml_nand_select_chip(aml_chip, i);
 
-			if (aml_nand_get_fbb_issue()) {
-				chip->cmd_ctrl(mtd,
-					NAND_CMD_SEQIN, NAND_CTRL_CLE);
-				chip->cmd_ctrl(mtd,
-					0, NAND_CTRL_ALE);
-				}
-				aml_chip->aml_nand_command(aml_chip,
-					NAND_CMD_READ0, 0x00,
-					aml_chip->page_addr , i);
-				udelay(2);
-
-			if (!aml_chip->aml_nand_wait_devready(aml_chip, i))
-				printk ("%s, %d,selected chip%d not ready\n",
-					__func__, __LINE__, i);
-
-				if (aml_chip->ops_mode & AML_CHIP_NONE_RB)
+				if (aml_nand_get_fbb_issue()) {
 					chip->cmd_ctrl(mtd,
-					NAND_CMD_READ0 & 0xff,
-					NAND_NCE | NAND_CLE | NAND_CTRL_CHANGE);
-				udelay(2);
+						NAND_CMD_SEQIN, NAND_CTRL_CLE);
+					chip->cmd_ctrl(mtd,
+						0, NAND_CTRL_ALE);
+					}
+					aml_chip->aml_nand_command(aml_chip,
+						NAND_CMD_READ0, 0x00,
+						aml_chip->page_addr , i);
+					udelay(2);
 
-			if (aml_chip->mfr_type  == NAND_MFR_SANDISK) {
-				for (j = 0; j < 6; j++)
-					col_data_sandisk[j] =
-						chip->read_byte(mtd);
-			} else
-				col0_data = chip->read_byte(mtd);
+				if (!aml_chip->aml_nand_wait_devready(aml_chip, i))
+					printk ("%s, %d,selected chip%d not ready\n",
+						__func__, __LINE__, i);
+
+					if (aml_chip->ops_mode & AML_CHIP_NONE_RB)
+						chip->cmd_ctrl(mtd,
+						NAND_CMD_READ0 & 0xff,
+						NAND_NCE | NAND_CLE | NAND_CTRL_CHANGE);
+					udelay(2);
+
+				if (aml_chip->mfr_type  == NAND_MFR_SANDISK) {
+					for (j = 0; j < 6; j++)
+						col_data_sandisk[j] =
+							chip->read_byte(mtd);
+				} else
+					col0_data = chip->read_byte(mtd);
 
 				//printk("col0_data =%x\n",col0_data);
 
