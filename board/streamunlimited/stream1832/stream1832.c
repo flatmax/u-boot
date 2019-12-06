@@ -466,6 +466,13 @@ int board_axp152_init(void)
 	 */
 	ret |= axp152_set_dcdc_workmode(AXP152_DCDC2, AXP152_DCDC_WORKMODE_PWM);
 
+	/*
+	 * Also reset DCDC2 to 1.1 V because if the CPU was reset but the AXP not, e.g. warm reset
+	 * the DCDC2 voltage might be at 0.85 V from when the Linux governor set a low operating
+	 * point before an external reset. This is also the default value of the AXP152 after power on.
+	 */
+	ret |= axp152_set_dcdc2(1100);
+
 	/* Set VDDQ to 1.35V */
 	ret |= axp152_set_dcdc3(1350);
 
