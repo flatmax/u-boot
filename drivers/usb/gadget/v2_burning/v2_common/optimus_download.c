@@ -1287,7 +1287,7 @@ void optimus_reset(const int cfgFlag)
     while (--i) ;
 
     /*disable_interrupts();*/
-	reset_cpu(0);
+    reset_cpu(0);
 
     while (i++)
     {
