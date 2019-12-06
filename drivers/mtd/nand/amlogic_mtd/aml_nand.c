@@ -2698,8 +2698,8 @@ int aml_nand_write_page_raw(struct mtd_info *mtd,
 			if (aml_chip->plane_num == 2) {
 				memcpy(aml_chip->aml_nand_data_buf,
 					buf, nand_page_size);
-		memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
-			oob_buf, nand_oob_size);
+				memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
+					oob_buf, nand_oob_size);
 				chip->write_buf(mtd,
 					aml_chip->aml_nand_data_buf,
 					nand_page_size + nand_oob_size);
@@ -2709,38 +2709,38 @@ int aml_nand_write_page_raw(struct mtd_info *mtd,
 				oob_buf += nand_oob_size;
 				buf += nand_page_size;
 
-		if (!aml_chip->aml_nand_wait_devready(aml_chip, i)) {
-			printk ("didn't found selected chip:%d ready\n",
-				i);
-			error = -EBUSY;
-			goto exit;
-		}
+				if (!aml_chip->aml_nand_wait_devready(aml_chip, i)) {
+					printk ("didn't found selected chip:%d ready\n",
+						i);
+					error = -EBUSY;
+					goto exit;
+				}
 
-		memcpy(aml_chip->aml_nand_data_buf,
-			buf, nand_page_size);
-		memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
-			oob_buf, nand_oob_size);
-		aml_chip->aml_nand_command(aml_chip,
-			NAND_CMD_TWOPLANE_WRITE2, 0x00, page_addr, i);
-		chip->write_buf(mtd, aml_chip->aml_nand_data_buf,
-			(nand_page_size + nand_oob_size));
-		aml_chip->aml_nand_command(aml_chip,
-			NAND_CMD_PAGEPROG, -1, -1, i);
+				memcpy(aml_chip->aml_nand_data_buf,
+					buf, nand_page_size);
+				memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
+					oob_buf, nand_oob_size);
+				aml_chip->aml_nand_command(aml_chip,
+					NAND_CMD_TWOPLANE_WRITE2, 0x00, page_addr, i);
+				chip->write_buf(mtd, aml_chip->aml_nand_data_buf,
+					(nand_page_size + nand_oob_size));
+				aml_chip->aml_nand_command(aml_chip,
+					NAND_CMD_PAGEPROG, -1, -1, i);
 
 				oob_buf += nand_oob_size;
 				buf += nand_page_size;
 			} else if (aml_chip->plane_num == 1) {
 				memcpy(aml_chip->aml_nand_data_buf,
 					buf, nand_page_size);
-		memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
-			oob_buf, nand_oob_size);
+				memcpy(aml_chip->aml_nand_data_buf + nand_page_size,
+					oob_buf, nand_oob_size);
 				chip->write_buf(mtd,
 					aml_chip->aml_nand_data_buf,
 					nand_page_size + nand_oob_size);
-			if (chip->cmdfunc == aml_nand_command)
-				aml_chip->aml_nand_command(aml_chip,
-					NAND_CMD_PAGEPROG,
-					-1, -1, i);
+				if (chip->cmdfunc == aml_nand_command)
+					aml_chip->aml_nand_command(aml_chip,
+						NAND_CMD_PAGEPROG,
+						-1, -1, i);
 
 				oob_buf += nand_oob_size;
 				buf += nand_page_size;
