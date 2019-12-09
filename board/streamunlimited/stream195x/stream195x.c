@@ -185,6 +185,14 @@ int power_init_board(void)
 	if (ret)
 		return ret;
 
+	/*
+	 * Set DCDC6 (3V3_OUT) from 3.1 V to 3.3 V
+	 * min: 0.5 V, 100 mV/step => (3.3 V - 0.5 V) / 0,1 V = 28
+	 */
+	ret = pmic_reg_write(dev, AXP15060_DCDC6_V_CTRL, 28);
+	if (ret)
+		return ret;
+
 	return 0;
 }
 
