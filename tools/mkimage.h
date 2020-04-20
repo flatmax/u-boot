@@ -22,7 +22,8 @@
 #include "fdt_host.h"
 #include "imagetool.h"
 
-#undef MKIMAGE_DEBUG
+//#undef MKIMAGE_DEBUG
+#define MKIMAGE_DEBUG
 
 #ifdef MKIMAGE_DEBUG
 #define debug(fmt,args...)	printf (fmt ,##args)
